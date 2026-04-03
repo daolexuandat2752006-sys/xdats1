@@ -1,0 +1,623 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// ─── TABS CONFIG ───────────────────────────────────────────────────────────────
+const tabs = [
+  { id: 'stata',   label: 'Stata',    color: 'blue',    icon: 'S',  desc: 'Phần mềm chuyên về kinh tế lượng & phân tích dữ liệu' },
+  { id: 'r',       label: 'R',        color: 'cyan',    icon: 'R',  desc: 'Ngôn ngữ cho tính toán & đồ họa thống kê' },
+  { id: 'spss',    label: 'SPSS',     color: 'purple',  icon: 'SP', desc: 'Nền tảng phân tích thống kê của IBM' },
+  { id: 'pls',     label: 'PLS-SEM',  color: 'emerald', icon: 'PL', desc: 'Mô hình phương trình cấu trúc bán tham số' },
+];
+
+// ─── CONTENT DATA ──────────────────────────────────────────────────────────────
+const tabContent: Record<string, {
+  sections: Array<{
+    id: string;
+    title: string;
+    titleEn?: string;
+    icon: string;
+    description: string;
+    tags: string[];
+    stats: { value: string; label: string }[];
+    items: Array<{
+      label: string;
+      tag?: string;
+      severity?: 'Tới hạn' | 'Nghiêm trọng' | 'Trung bình' | 'Cơ bản' | 'Nâng cao';
+      tagColor?: string;
+    }>;
+  }>;
+}> = {
+
+  // ═══════════════════ STATA ═══════════════════
+  stata: {
+    sections: [
+      {
+        id: 'best-packages',
+        title: 'Gói lệnh tốt nhất',
+        titleEn: 'Best Packages',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+        description: 'Các gói được chuẩn hóa bởi giới nghiên cứu, dùng làm mặc định cho công bố khoa học.',
+        tags: ['IV', 'DID', 'Panel', 'ML', 'Tables'],
+        stats: [{ value: '18+', label: 'Gói chuẩn' }, { value: '5', label: 'Lĩnh vực' }],
+        items: [
+          { label: 'reg + robust', tag: 'OLS cơ bản', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+          { label: 'estout / esttab', tag: 'Bảng công bố', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+          { label: 'ivreg2', tag: 'Biến công cụ', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'csdid', tag: 'DID theo giai đoạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+          { label: 'rdrobust', tag: 'Hồi quy gián đoạn', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+          { label: 'xtreg, fe', tag: 'Dữ liệu bảng FE', tagColor: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20' },
+          { label: 'reghdfe', tag: 'Nhiều hiệu ứng cố định', tagColor: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20' },
+          { label: 'xtabond2', tag: 'GMM bảng động', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'logit + margins', tag: 'Biến nhị phân', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'ddml', tag: 'Double ML', tagColor: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20' },
+          { label: 'binscatter2', tag: 'Trực quan hóa OLS', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+          { label: 'synth', tag: 'Kiểm soát tổng hợp', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+        ],
+      },
+      {
+        id: 'decision-tree',
+        title: 'Cây quyết định',
+        titleEn: 'Decision Tree',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><line x1="7" y1="12" x2="17" y2="7"/><line x1="7" y1="12" x2="17" y2="17"/></svg>`,
+        description: 'Chọn đúng phương pháp theo bản chất dữ liệu và câu hỏi nghiên cứu.',
+        tags: ['OLS', 'IV', 'DID', 'RD', 'Panel', 'ML'],
+        stats: [{ value: '11', label: 'Phương pháp' }, { value: '6', label: 'Nhánh' }],
+        items: [
+          { label: 'Biến phụ thuộc liên tục?', tag: 'Bước 1', tagColor: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
+          { label: 'Biến nội sinh hay ngoại sinh?', tag: 'Bước 2', tagColor: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
+          { label: 'Dữ liệu bảng hay cắt ngang?', tag: 'Bước 3', tagColor: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
+          { label: 'Thiết kế theo giai đoạn hay đồng thời?', tag: 'Bước 4', tagColor: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
+          { label: 'Ngưỡng rõ ràng hay không?', tag: 'Bước 5', tagColor: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
+          { label: 'Có biến trễ trong mô hình?', tag: 'Bước 6', tagColor: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
+        ],
+      },
+      {
+        id: 'common-mistakes',
+        title: 'Sai lầm phổ biến',
+        titleEn: 'Common Mistakes',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+        description: 'Những lỗi nghiêm trọng nhất trong thực hành kinh tế lượng — và cách khắc phục.',
+        tags: ['OLS', 'IV', 'DID', 'Panel', 'Chuỗi'],
+        stats: [{ value: '18+', label: 'Lỗi phổ biến' }, { value: '3', label: 'Cấp độ' }],
+        items: [
+          { label: 'Dùng SE cổ điển thay vì robust', severity: 'Tới hạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+          { label: 'Không cluster khi can thiệp ở cấp nhóm', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'F của Cragg-Donald với cluster SE', severity: 'Tới hạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+          { label: 'Biến công cụ yếu (F < 10) không báo cáo', severity: 'Tới hạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+          { label: 'TWFE cho DID theo giai đoạn', severity: 'Tới hạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+          { label: 'Diễn giải R² là chất lượng nhân quả', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Không kiểm định xu hướng song song', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Diễn giải hệ số logit là tác động biên', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Chạy ARIMA/VAR không kiểm định nghiệm đơn vị', severity: 'Tới hạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+          { label: 'Dùng Lasso thô cho suy diễn nhân quả', severity: 'Tới hạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+        ],
+      },
+    ],
+  },
+
+  // ═══════════════════ R ═══════════════════
+  r: {
+    sections: [
+      {
+        id: 'best-packages',
+        title: 'Gói lệnh tốt nhất',
+        titleEn: 'Best Packages',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+        description: 'Hệ sinh thái tidyverse là nền tảng; các gói chuyên biệt cho từng phương pháp.',
+        tags: ['Tidyverse', 'ML', 'Causal', 'Tables', 'Viz'],
+        stats: [{ value: '20+', label: 'Gói chuẩn' }, { value: '5', label: 'Lĩnh vực' }],
+        items: [
+          { label: 'dplyr', tag: 'Thao tác dữ liệu', tagColor: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20' },
+          { label: 'ggplot2', tag: 'Đồ họa chuẩn', tagColor: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20' },
+          { label: 'fixest', tag: 'FE & IV nhanh', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'plm', tag: 'Dữ liệu bảng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'glmnet', tag: 'Lasso & Ridge', tagColor: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20' },
+          { label: 'causalverse / rdrobust', tag: 'RDD trong R', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+          { label: 'DeclareDesign', tag: 'Thiết kế nghiên cứu', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'MatchIt', tag: 'Ghép cặp (Matching)', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+          { label: 'broom', tag: 'Dọn dẹp kết quả', tagColor: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20' },
+          { label: 'gt / gtExtras', tag: 'Bảng đẹp', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+          { label: 'fabricatr', tag: 'Mô phỏng dữ liệu', tagColor: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
+          { label: 'DoubleML', tag: 'Double ML', tagColor: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20' },
+        ],
+      },
+      {
+        id: 'decision-tree',
+        title: 'Cây quyết định',
+        titleEn: 'Decision Tree',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><line x1="7" y1="12" x2="17" y2="7"/><line x1="7" y1="12" x2="17" y2="17"/></svg>`,
+        description: 'Chọn gói phù hợp theo bối cảnh: thao tác dữ liệu, mô hình hóa, hay trực quan hóa.',
+        tags: ['Tidyverse', 'Models', 'Causal', 'Viz'],
+        stats: [{ value: '3', label: 'Nhánh chính' }, { value: '10+', label: 'Gói liên quan' }],
+        items: [
+          { label: 'Phân tích mô tả & thao tác dữ liệu', tag: 'Tidyverse', tagColor: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20' },
+          { label: 'Mô hình hồi quy & suy luận', tag: 'fixest / plm', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Học máy & dự báo', tag: 'tidymodels / glmnet', tagColor: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20' },
+          { label: 'Suy diễn nhân quả', tag: 'DoubleML / MatchIt', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+          { label: 'Trực quan hóa nâng cao', tag: 'ggplot2 / patchwork', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'Báo cáo tái lập', tag: 'R Markdown / quarto', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+        ],
+      },
+      {
+        id: 'common-mistakes',
+        title: 'Sai lầm phổ biến',
+        titleEn: 'Common Mistakes',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+        description: 'Những lỗi thường gặp khi sử dụng R trong nghiên cứu thực nghiệm.',
+        tags: ['Syntax', 'Tidyverse', 'Models', 'Causal'],
+        stats: [{ value: '10+', label: 'Lỗi phổ biến' }, { value: '3', label: 'Cấp độ' }],
+        items: [
+          { label: 'Dùng [ ] thay vì filter() / select() — trộn base R và tidyverse', severity: 'Trung bình', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Không xử lý factor levels khi gặp unknown levels', severity: 'Trung bình', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'summary(lm()) không đủ — cần robust SE (sandwich)', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Lưu kết quả mô hình dưới dạng list thủ công thay vì dùng broom', severity: 'Trung bình', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Overfitting với glmnet mà không cross-validate lambda', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Tách tập train/test sau khi transform dữ liệu — data leakage', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Dùng mean imputation cho missing mà không báo cáo N missing', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'ggplot không gán aesthetics đúng — nhầm biến x/y', severity: 'Cơ bản', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+        ],
+      },
+    ],
+  },
+
+  // ═══════════════════ SPSS ═══════════════════
+  spss: {
+    sections: [
+      {
+        id: 'best-packages',
+        title: 'Gói lệnh & Thủ tục tốt nhất',
+        titleEn: 'Best Procedures',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+        description: 'SPSS Syntax chuẩn cho các phương pháp phổ biến trong nghiên cứu xã hội và kinh tế.',
+        tags: ['Regression', 'GLM', 'Factor', 'Cluster'],
+        stats: [{ value: '12+', label: 'Thủ tục' }, { value: '4', label: 'Lĩnh vực' }],
+        items: [
+          { label: 'REGRESSION', tag: 'OLS cơ bản', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+          { label: 'LOGISTIC REGRESSION', tag: 'Mô hình nhị phân', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+          { label: 'GENLINMIXED', tag: 'Mô hình hỗn hợp', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'MIXED', tag: 'Linear Mixed Models', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'FACTOR', tag: 'Phân tích nhân tố', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'CLUSTER', tag: 'Phân cụm K-means', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'EXAMINE', tag: 'Kiểm tra phân phối', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+          { label: 'RELIABILITY', tag: 'Độ tin cậy thang đo', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+          { label: 'ROC', tag: 'Đường cong ROC', tagColor: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20' },
+          { label: 'CROSSTABS + chi-square', tag: 'Kiểm định独立性', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+        ],
+      },
+      {
+        id: 'decision-tree',
+        title: 'Cây quyết định',
+        titleEn: 'Decision Tree',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><line x1="7" y1="12" x2="17" y2="7"/><line x1="7" y1="12" x2="17" y2="17"/></svg>`,
+        description: 'Chọn thủ tục SPSS phù hợp theo loại biến phụ thuộc và thiết kế nghiên cứu.',
+        tags: ['Regression', 'GLM', 'Factor', 'Survival'],
+        stats: [{ value: '6', label: 'Nhánh' }, { value: '4', label: 'Cấp độ' }],
+        items: [
+          { label: 'Biến phụ thuộc liên tục → REGRESSION', tag: 'OLS', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+          { label: 'Biến phụ thuộc nhị phân → LOGISTIC', tag: 'GLM', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+          { label: 'Dữ liệu lặp lại → MIXED / GENLINMIXED', tag: 'Mixed', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Nhiều biến quan sát → FACTOR (EFA/CFA)', tag: 'Factor', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'Phân nhóm mẫu → CLUSTER', tag: 'Cluster', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'Dữ liệu sống sót → COXREG / KAPLAN-MEIER', tag: 'Survival', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+        ],
+      },
+      {
+        id: 'common-mistakes',
+        title: 'Sai lầm phổ biến',
+        titleEn: 'Common Mistakes',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+        description: 'Những lỗi thường gặp khi sử dụng SPSS cho phân tích định lượng.',
+        tags: ['Syntax', 'Missing', 'Factor', 'GLM'],
+        stats: [{ value: '10+', label: 'Lỗi phổ biến' }, { value: '3', label: 'Cấp độ' }],
+        items: [
+          { label: 'Click-and-run thay vì dùng Syntax — không tái lập được', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Xóa outlier bằng mắt thay vì dùng quy tắc thống kê', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Chạy EFA rồi CFA trên cùng mẫu — cross-validation', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Diễn giải hệ số logistic là tác động biên — dùng ODDS RATIO', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Không kiểm tra multicollinearity (VIF) trong regression', severity: 'Trung bình', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Missing > 5% mà không xử lý — listwise deletion mặc định', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Dùng Cronbach alpha để đánh giá unidimensionality', severity: 'Trung bình', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+        ],
+      },
+    ],
+  },
+
+  // ═══════════════════ PLS-SEM ═══════════════════
+  pls: {
+    sections: [
+      {
+        id: 'best-packages',
+        title: 'Gói & Phần mềm tốt nhất',
+        titleEn: 'Best Packages & Software',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+        description: 'Phần mềm chuẩn cho mô hình phương trình cấu trúc bán tham số (PLS-SEM).',
+        tags: ['SmartPLS', 'R', 'CB-SEM', 'Plastics'],
+        stats: [{ value: '3', label: 'Công cụ' }, { value: '4', label: 'Đánh giá' }],
+        items: [
+          { label: 'SmartPLS 4', tag: 'Phần mềm chuẩn PLS', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'plsdebias', tag: 'Hiệu chỉnh chệch trong R', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'semPLS', tag: 'PLS-SEM trong R', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'matrixB', tag: 'Đánh giá Bootstrap trong R', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'PLSpredict', tag: 'Đánh giá dự báo', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+          { label: 'IPMA', tag: 'Phân tích importance-performance', tagColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+          { label: 'HTMT', tag: 'Kiểm định phân biệt', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'GaBi', tag: 'G*Power cho PLS-SEM', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+        ],
+      },
+      {
+        id: 'decision-tree',
+        title: 'Cây quyết định',
+        titleEn: 'Decision Tree',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><line x1="7" y1="12" x2="17" y2="7"/><line x1="7" y1="12" x2="17" y2="17"/></svg>`,
+        description: 'Chọn PLS-SEM hay CB-SEM, và đánh giá đúng các tiêu chí trong mỗi bước.',
+        tags: ['Model', 'Reflective', 'Formative', 'Evaluation'],
+        stats: [{ value: '4', label: 'Giai đoạn' }, { value: '2', label: 'Loại SEM' }],
+        items: [
+          { label: 'Mục tiêu là dự báo hay giải thích?', tag: 'Bước 1', tagColor: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
+          { label: 'Các khái niệm là phản chiếu hay hình thành?', tag: 'Bước 2', tagColor: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
+          { label: 'Đánh giá mô hình đo lường trước', tag: 'Bước 3', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'Đánh giá mô hình cấu trúc sau', tag: 'Bước 4', tagColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
+          { label: 'Dự báo: PLSpredict / MaqSq Q²', tag: 'Bước 5', tagColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+          { label: 'Heterotrait-Monotrait (HTMT) cho phân biệt', tag: 'Bước 6', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+        ],
+      },
+      {
+        id: 'common-mistakes',
+        title: 'Sai lầm phổ biến',
+        titleEn: 'Common Mistakes',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+        description: 'Những lỗi phổ biến nhất khi sử dụng PLS-SEM trong nghiên cứu kinh doanh.',
+        tags: ['Measurement', 'Reflective', 'Formative', 'Bootstrapping'],
+        stats: [{ value: '12+', label: 'Lỗi phổ biến' }, { value: '3', label: 'Cấp độ' }],
+        items: [
+          { label: 'Dùng PLS-SEM cho mục tiêu giải thích/lý thuyết thay vì CB-SEM', severity: 'Tới hạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+          { label: 'Không đánh giá mô hình đo lường trước mô hình cấu trúc', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Báo cáo chỉ R² mà không đánh giá convergent validity', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Đánh giá reflective constructs bằng VIF (thay vì HTMT)', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Formative constructs không kiểm tra VIF và trọng số', severity: 'Tới hạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+          { label: 'Bootstrap < 5000 mà không báo cáo', severity: 'Trung bình', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Bỏ qua đánh giá dự báo (PLSpredict / Q²)', severity: 'Nghiêm trọng', tagColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20' },
+          { label: 'Mẫu quá nhỏ cho PLS-SEM (Hair et al. 2019: n ≥ 10×số chỉ tiêu)', severity: 'Tới hạn', tagColor: 'bg-red-500/10 text-red-300 border-red-500/20' },
+        ],
+      },
+    ],
+  },
+};
+
+// ─── COLOR MAP FOR TABS ───────────────────────────────────────────────────────
+const colorMap: Record<string, {
+  indicatorBg: string;
+  indicatorBorder: string;
+  indicatorShadow: string;
+  badge: string;
+  badgeText: string;
+  glow: string;
+  cardBorder: string;
+  cardHover: string;
+  icon: string;
+  iconHover: string;
+  rgb: string;
+}> = {
+  blue:    { indicatorBg: 'rgba(59,130,246,0.12)',  indicatorBorder: 'rgba(59,130,246,0.25)',  indicatorShadow: '0 0 20px rgba(59,130,246,0.15)',  badge: 'bg-blue-500/10 text-blue-300 border-blue-500/20',   badgeText: 'text-blue-300', glow: 'shadow-[0_0_40px_rgba(59,130,246,0.12)]',   cardBorder: 'hover:border-blue-500/30',   cardHover: 'hover:shadow-[0_0_40px_rgba(59,130,246,0.12)]',   icon: 'text-blue-400 group-hover:text-blue-300 border-blue-500/30 group-hover:bg-blue-500/10', iconHover: 'border-blue-500/30 bg-blue-500/10 text-blue-300', rgb: '59,130,246' },
+  cyan:    { indicatorBg: 'rgba(6,182,212,0.12)',   indicatorBorder: 'rgba(6,182,212,0.25)',   indicatorShadow: '0 0 20px rgba(6,182,212,0.15)',   badge: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20',    badgeText: 'text-cyan-300', glow: 'shadow-[0_0_40px_rgba(6,182,212,0.12)]',    cardBorder: 'hover:border-cyan-500/30',   cardHover: 'hover:shadow-[0_0_40px_rgba(6,182,212,0.12)]',   icon: 'text-cyan-400 group-hover:text-cyan-300 border-cyan-500/30 group-hover:bg-cyan-500/10', iconHover: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-300', rgb: '6,182,212' },
+  purple:  { indicatorBg: 'rgba(139,92,246,0.12)',  indicatorBorder: 'rgba(139,92,246,0.25)',  indicatorShadow: '0 0 20px rgba(139,92,246,0.15)',  badge: 'bg-purple-500/10 text-purple-300 border-purple-500/20', badgeText: 'text-purple-300', glow: 'shadow-[0_0_40px_rgba(139,92,246,0.12)]',  cardBorder: 'hover:border-purple-500/30', cardHover: 'hover:shadow-[0_0_40px_rgba(139,92,246,0.12)]', icon: 'text-purple-400 group-hover:text-purple-300 border-purple-500/30 group-hover:bg-purple-500/10', iconHover: 'border-purple-500/30 bg-purple-500/10 text-purple-300', rgb: '139,92,246' },
+  emerald: { indicatorBg: 'rgba(16,185,129,0.12)',  indicatorBorder: 'rgba(16,185,129,0.25)',  indicatorShadow: '0 0 20px rgba(16,185,129,0.15)',  badge: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20', badgeText: 'text-emerald-300', glow: 'shadow-[0_0_40px_rgba(16,185,129,0.12)]',  cardBorder: 'hover:border-emerald-500/30', cardHover: 'hover:shadow-[0_0_40px_rgba(16,185,129,0.12)]', icon: 'text-emerald-400 group-hover:text-emerald-300 border-emerald-500/30 group-hover:bg-emerald-500/10', iconHover: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300', rgb: '16,185,129' },
+};
+
+const colorSchemes = ['blue', 'cyan', 'purple', 'emerald'];
+const positions    = ['3px', 'calc(25% + 3px)', 'calc(50% + 3px)', 'calc(75% + 3px)'];
+---
+
+<Layout>
+  <!-- ═══════════════════════════════════════════
+       HERO SECTION
+  ════════════════════════════════════════════ -->
+  <section class="text-center max-w-4xl mx-auto mb-12">
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-300 text-xs font-mono font-medium mb-6">
+      <span class="relative flex h-1.5 w-1.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span>
+      </span>
+      v2.0 — Hướng dẫn Kinh tế lượng & Thống kê
+    </div>
+
+    <!-- Heading -->
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] tracking-tight mb-6 leading-[1.1]">
+      <span class="text-white">Cổng thông tin</span>
+      <br />
+      <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+        Tính toán Thống kê
+      </span>
+      <br />
+      <span class="text-white">Thống nhất</span>
+    </h1>
+
+    <!-- Subheading -->
+    <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
+      Một trung tâm cho hướng dẫn, cú pháp, hệ sinh thái gói lệnh và kiến thức cộng đồng
+      về <span class="text-slate-300 font-medium">Stata</span>,
+      <span class="text-slate-300 font-medium">R</span>,
+      <span class="text-slate-300 font-medium">SPSS</span> và
+      <span class="text-slate-300 font-medium">PLS-SEM</span>.
+      Xây dựng cho những ai đòi hỏi sự chính xác.
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <a
+        href="#explore"
+        class="group inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold shadow-[0_0_24px_rgba(59,130,246,0.35)] hover:shadow-[0_0_36px_rgba(59,130,246,0.5)] transition-all duration-300"
+      >
+        Khám phá ngay
+        <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+      <a
+        href="#"
+        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl border border-slate-700/60 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-sm font-medium transition-all duration-200"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TABS SECTION
+  ════════════════════════════════════════════ -->
+  <section class="max-w-5xl mx-auto mb-10">
+    <div
+      id="explore"
+      class="relative flex flex-wrap items-center justify-center gap-1 sm:gap-2 p-1.5 rounded-xl border border-slate-800/80 bg-[#0d1117]/60 backdrop-blur-xl shadow-inner"
+      style="scroll-margin-top: 6rem;"
+    >
+      <!-- Active tab indicator (sliding pill) -->
+      <div
+        id="tab-indicator"
+        class="absolute top-1.5 bottom-1.5 rounded-lg transition-all duration-300 ease-out"
+        style="width: calc(25% - 6px); left: 3px; background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25); box-shadow: 0 0 20px rgba(59,130,246,0.15);"
+      ></div>
+
+      {tabs.map((tab, i) => (
+        <button
+          data-tab={tab.id}
+          data-index={i}
+          class="relative z-10 flex-1 min-w-[100px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap cursor-pointer"
+          aria-selected={i === 0 ? 'true' : 'false'}
+        >
+          <span
+            class={`tab-icon-${tab.id} inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold font-mono transition-all duration-200 ${
+              i === 0 ? `bg-${tab.color}-500/20 text-${tab.color}-300` : 'bg-white/5 text-slate-500'
+            }`}
+          >
+            {tab.icon}
+          </span>
+          <span class={`tab-label-${tab.id} ${i === 0 ? 'text-white' : 'text-slate-400'}`}>
+            {tab.label}
+          </span>
+        </button>
+      ))}
+    </div>
+
+    <!-- Tab Description -->
+    <div class="mt-4 text-center">
+      <p id="tab-description" class="text-sm text-slate-400">
+        {tabs[0].desc}
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CONTENT SECTIONS (one panel per tab)
+  ════════════════════════════════════════════ -->
+  <div id="tab-panels" class="max-w-5xl mx-auto">
+
+    {tabs.map((tab, tabIdx) => {
+      const content = tabContent[tab.id];
+      const scheme  = colorMap[tab.color];
+
+      return (
+        <div
+          id={`panel-${tab.id}`}
+          class={`tab-panel ${tabIdx === 0 ? '' : 'hidden'}`}
+          data-panel={tab.id}
+        >
+          {content.sections.map((section) => (
+            <div class="mb-10">
+              <!-- Section header -->
+              <div class="flex items-center gap-4 mb-6">
+                <div class={`flex h-10 w-10 items-center justify-center rounded-xl border border-slate-700/50 bg-slate-800/40 text-slate-400 flex-shrink-0`}
+                  set:html={section.icon}
+                />
+                <div class="min-w-0">
+                  <h2 class="text-base sm:text-lg font-semibold text-white font-['Space_Grotesk'] leading-tight">
+                    {section.title}
+                    {section.titleEn && (
+                      <span class="ml-2 text-xs font-mono text-slate-500 hidden sm:inline">({section.titleEn})</span>
+                    )}
+                  </h2>
+                  <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">{section.description}</p>
+                </div>
+                <!-- Stats -->
+                <div class="hidden sm:flex items-center gap-3 ml-auto flex-shrink-0">
+                  {section.stats.map((stat) => (
+                    <div class="text-right">
+                      <div class={`text-lg font-bold font-['Space_Grotesk'] ${scheme.badgeText}`}>{stat.value}</div>
+                      <div class="text-[10px] text-slate-600 uppercase tracking-wider">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Tags row -->
+              <div class="flex flex-wrap gap-1.5 mb-4">
+                {section.tags.map((tag) => (
+                  <span class={`px-2.5 py-0.5 rounded-full border text-[10px] font-mono font-medium ${scheme.badge}`}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <!-- Items grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2.5">
+                {section.items.map((item) => (
+                  <div class="group flex items-center gap-3 rounded-xl border border-slate-800/60 bg-[#0d1117]/50 hover:bg-[#0d1117]/80 hover:border-slate-700/80 px-4 py-3 cursor-default transition-all duration-200 hover:-translate-y-0.5">
+                    <!-- Severity dot or colored dot -->
+                    {item.severity ? (
+                      <span class={`flex-shrink-0 h-1.5 w-1.5 rounded-full mt-0.5 ${
+                        item.severity === 'Tới hạn'   ? 'bg-red-500' :
+                        item.severity === 'Nghiêm trọng' ? 'bg-orange-400' :
+                        item.severity === 'Trung bình'  ? 'bg-yellow-400' :
+                        item.severity === 'Cơ bản'     ? 'bg-blue-400' :
+                        'bg-emerald-400'
+                      }`}></span>
+                    ) : (
+                      <svg class="h-3.5 w-3.5 text-slate-600 group-hover:text-slate-400 flex-shrink-0 transition-colors duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
+                    )}
+
+                    <div class="min-w-0 flex-1">
+                      <div class="text-sm text-slate-300 group-hover:text-white transition-colors duration-200 leading-tight truncate">
+                        {item.label}
+                      </div>
+                      {item.tag && (
+                        <div class={`mt-1 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono border ${item.tagColor || scheme.badge}`}>
+                          {item.severity ? item.severity : item.tag}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <!-- Divider -->
+          <div class="border-t border-slate-800/40 mb-8"></div>
+        </div>
+      );
+    })}
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       STATS BAR
+  ════════════════════════════════════════════ -->
+  <section class="max-w-5xl mx-auto mt-6 mb-8">
+    <div class="flex flex-wrap items-center justify-center gap-8 sm:gap-16 py-8 border-t border-slate-800/40">
+      {[
+        { value: '4', label: 'Nền tảng phần mềm' },
+        { value: '580+', label: 'Hướng dẫn & Bài viết' },
+        { value: '12k+', label: 'Thành viên cộng đồng' },
+        { value: '98%', label: 'Độ khả dụng SLA' },
+      ].map((stat) => (
+        <div class="text-center">
+          <div class="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            {stat.value}
+          </div>
+          <div class="text-xs text-slate-500 mt-1 uppercase tracking-wider">{stat.label}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+</Layout>
+
+<!-- ═══════════════════════════════════════════
+     TAB SWITCHER + SCROLL SCRIPT
+═══════════════════════════════════════════ -->
+<script define:vars={{ tabs, colorMap, colorSchemes, positions }}>
+  const indicator    = document.getElementById('tab-indicator');
+  const descriptionEl = document.getElementById('tab-description');
+  const tabButtons   = document.querySelectorAll('[data-tab]');
+  const panels       = document.querySelectorAll('.tab-panel');
+
+  // ── Set active tab ──────────────────────────────
+  function setTab(index) {
+    const color = colorSchemes[index];
+    const scheme = colorMap[color];
+
+    // 1) Move sliding indicator
+    if (indicator) {
+      indicator.style.left      = positions[index];
+      indicator.style.background  = scheme.indicatorBg;
+      indicator.style.border     = `1px solid ${scheme.indicatorBorder}`;
+      indicator.style.boxShadow  = scheme.indicatorShadow;
+    }
+
+    // 2) Update button states
+    tabButtons.forEach((btn, i) => {
+      const isActive = i === index;
+      const btnColor = colorSchemes[i];
+
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+
+      // Icon pill
+      const icon = btn.querySelector(`[class*="tab-icon-"]`);
+      if (icon) {
+        icon.className = `tab-icon-${tabs[i].id} inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold font-mono transition-all duration-200 ${
+          isActive
+            ? `bg-${btnColor}-500/20 text-${btnColor}-300`
+            : 'bg-white/5 text-slate-500'
+        }`;
+      }
+
+      // Label
+      const label = btn.querySelector(`[class*="tab-label-"]`);
+      if (label) {
+        label.className = `tab-label-${tabs[i].id} ${isActive ? 'text-white' : 'text-slate-400'}`;
+      }
+    });
+
+    // 3) Update description
+    if (descriptionEl) {
+      descriptionEl.textContent = tabs[index].desc;
+    }
+
+    // 4) Switch panels — fade in
+    panels.forEach((panel) => {
+      const panelId = panel.getAttribute('data-panel');
+      const isTarget = panelId === tabs[index].id;
+
+      if (isTarget) {
+        panel.classList.remove('hidden');
+        panel.style.opacity    = '0';
+        panel.style.transform  = 'translateY(8px)';
+        panel.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            panel.style.opacity   = '1';
+            panel.style.transform = 'translateY(0)';
+          });
+        });
+      } else {
+        panel.classList.add('hidden');
+      }
+    });
+
+    // 5) Update section icon + card colors per tab color
+    document.querySelectorAll('.tab-panel:not(.hidden)').forEach(() => {
+      // Update severity dot colors (already handled by CSS classes)
+    });
+  }
+
+  // ── Attach click handlers ───────────────────────
+  tabButtons.forEach((btn, i) => {
+    btn.addEventListener('click', () => setTab(i));
+  });
+
+  // ── Keyboard navigation ─────────────────────────
+  tabButtons.forEach((btn, i) => {
+    btn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); setTab((i + 1) % tabs.length); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); setTab((i - 1 + tabs.length) % tabs.length); }
+    });
+  });
+
+  // ── Initialize ─────────────────────────────────
+  setTab(0);
+</script>

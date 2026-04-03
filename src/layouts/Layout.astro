@@ -1,0 +1,204 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'StatGate — Unified Statistical Computing Gateway',
+  description = 'Centralized hub for Stata, R, SPSS, and PLS-SEM resources, guides, and community knowledge.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-[#030712] min-h-screen text-slate-100 overflow-x-hidden">
+    <!-- Ambient background -->
+    <div class="fixed inset-0 pointer-events-none -z-10" aria-hidden="true">
+      <!-- Grid overlay -->
+      <div
+        class="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"
+      ></div>
+      <!-- Glow blobs -->
+      <div
+        class="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[80vw] h-[50vh] bg-blue-600/10 rounded-full blur-[120px]"
+      ></div>
+      <div
+        class="absolute top-[40%] left-[10%] w-[40vw] h-[40vh] bg-cyan-600/5 rounded-full blur-[100px]"
+      ></div>
+      <div
+        class="absolute top-[60%] right-[5%] w-[30vw] h-[30vh] bg-purple-600/5 rounded-full blur-[80px]"
+      ></div>
+    </div>
+
+    <!-- Navbar -->
+    <header
+      id="navbar"
+      class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+    >
+      <nav
+        class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4"
+      >
+        <div
+          class="flex items-center justify-between rounded-2xl border border-blue-500/20 bg-[#0d1117]/80 backdrop-blur-2xl px-5 py-3 shadow-[0_0_30px_rgba(59,130,246,0.08),inset_0_1px_0_rgba(255,255,255,0.05)]"
+        >
+          <!-- Logo -->
+          <a href="/" class="flex items-center gap-2.5 group">
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-cyan-500 shadow-[0_0_16px_rgba(59,130,246,0.5)]"
+            >
+              <svg
+                class="h-5 w-5 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+            </div>
+            <span
+              class="text-lg font-bold tracking-tight text-white font-['Space_Grotesk']"
+            >
+              Stat<span class="text-blue-400">Gate</span>
+            </span>
+          </a>
+
+          <!-- Desktop Nav Links -->
+          <div class="hidden md:flex items-center gap-1">
+            <a
+              href="#"
+              class="px-4 py-1.5 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5 transition-all duration-200"
+            >
+              Guides
+            </a>
+            <a
+              href="#"
+              class="px-4 py-1.5 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5 transition-all duration-200"
+            >
+              Packages
+            </a>
+            <a
+              href="#"
+              class="px-4 py-1.5 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5 transition-all duration-200"
+            >
+              Community
+            </a>
+            <a
+              href="#"
+              class="ml-2 px-4 py-1.5 text-sm font-medium text-white bg-blue-600/20 border border-blue-500/40 rounded-lg hover:bg-blue-600/30 hover:border-blue-400/60 transition-all duration-200"
+            >
+              GitHub
+            </a>
+          </div>
+
+          <!-- Mobile menu button -->
+          <button
+            id="mobile-menu-btn"
+            class="md:hidden flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-600 transition-all duration-200"
+            aria-label="Open menu"
+          >
+            <svg
+              id="menu-icon"
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div
+          id="mobile-menu"
+          class="hidden md:hidden mt-2 rounded-xl border border-slate-800/60 bg-[#0d1117]/90 backdrop-blur-xl px-4 py-3 shadow-xl"
+        >
+          <div class="flex flex-col gap-1">
+            <a href="#" class="px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">Guides</a>
+            <a href="#" class="px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">Packages</a>
+            <a href="#" class="px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all">Community</a>
+            <div class="border-t border-slate-800/60 mt-2 pt-2">
+              <a href="#" class="px-3 py-2 text-sm font-medium text-blue-400 hover:text-blue-300 rounded-lg transition-all">GitHub</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Page Content -->
+    <main class="relative z-10 pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-slate-800/50 mt-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p class="text-sm text-slate-500">
+            &copy; 2026 StatGate. Built for the research community.
+          </p>
+          <div class="flex items-center gap-6">
+            <a href="#" class="text-sm text-slate-500 hover:text-slate-300 transition-colors">Docs</a>
+            <a href="#" class="text-sm text-slate-500 hover:text-slate-300 transition-colors">GitHub</a>
+            <a href="#" class="text-sm text-slate-500 hover:text-slate-300 transition-colors">Discord</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Navbar scroll effect + mobile toggle -->
+    <script>
+      const navbar = document.getElementById('navbar')!;
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn')!;
+      const mobileMenu = document.getElementById('mobile-menu')!;
+      let menuOpen = false;
+
+      // Scroll effect
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 20) {
+          navbar.classList.add('bg-[#030712]/90', 'backdrop-blur-xl', 'shadow-[0_4px_30px_rgba(0,0,0,0.4)]');
+          navbar.querySelector('nav > div').classList.add('border-blue-500/10');
+          navbar.querySelector('nav > div').classList.remove('border-blue-500/20');
+        } else {
+          navbar.classList.remove('bg-[#030712]/90', 'backdrop-blur-xl', 'shadow-[0_4px_30px_rgba(0,0,0,0.4)]');
+          navbar.querySelector('nav > div').classList.remove('border-blue-500/10');
+          navbar.querySelector('nav > div').classList.add('border-blue-500/20');
+        }
+      }, { passive: true });
+
+      // Mobile menu toggle
+      mobileMenuBtn.addEventListener('click', () => {
+        menuOpen = !menuOpen;
+        mobileMenu.classList.toggle('hidden', !menuOpen);
+      });
+    </script>
+  </body>
+</html>
