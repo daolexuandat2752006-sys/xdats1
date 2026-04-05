@@ -1,0 +1,173 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import categoriesData from '../../../public/js/data/categories.json';
+import commandsData  from '../../../public/js/data/commands.json';
+
+export function getStaticPaths() {
+  return categoriesData.categories.map((cat: typeof categoriesData.categories[0]) => ({
+    params: { cat: cat.id },
+    props:  { cat, allCategories: categoriesData.categories, allCommands: commandsData.commands },
+  }));
+}
+
+const { cat, allCategories, allCommands } = Astro.props;
+
+// all commands in this category
+const catCommands = allCommands.filter((c: any) => c.category === cat.id);
+
+// related comparison pages
+const comparisonPages = cat.comparison_pages ?? [];
+
+// level badge
+const levelBadge = (l: string) => {
+  if (l === 'Cơ bản')    return 'bg-green-500/10 text-green-400 border-green-500/20';
+  if (l === 'Trung cấp') return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
+  return 'bg-red-500/10 text-red-400 border-red-500/20';
+};
+
+const diffMap: Record<string, string> = {
+  beginner: 'Cơ bản', intermediate: 'Trung cấp', advanced: 'Nâng cao',
+};
+
+const installMap: Record<string, string> = {
+  builtin: 'Có sẵn', ssc: 'SSC', github: 'GitHub',
+};
+
+const catLevel = (id: string) => {
+  const basicRe = /^(ols-diagnostics|data-infrastructure)$/;
+  const advRe   = /^(iv-endogeneity|staggered-did|ml-econometrics|sensitivity-robustness)$/;
+  if      (basicRe.test(id)) return 'Cơ bản';
+  else if (advRe.test(id))   return 'Nâng cao';
+  return 'Trung cấp';
+};
+
+const level = catLevel(cat.id);
+---
+
+<Layout title={`${cat.name} · StatGate`} description={cat.short_desc}>
+  <div class="h-16"></div>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- Breadcrumb -->
+    <nav class="text-xs text-[#555] flex items-center gap-1.5">
+      <a href="/" class="hover:text-orange-400 transition-colors">Trang chủ</a>
+      <span>›</span>
+      <span class="text-white">{cat.name}</span>
+    </nav>
+
+    <!-- Category Header -->
+    <div class="rounded-2xl border border-[#2a2a2a] bg-[#111111] p-6">
+      <div class="flex items-start gap-4 mb-4">
+        <span class="text-4xl leading-none">{cat.icon}</span>
+        <div class="flex-1">
+          <div class="flex flex-wrap items-center gap-2 mb-2">
+            <span class={`rounded border px-2.5 py-1 text-[10px] font-mono font-semibold ${levelBadge(level)}`}>{level}</span>
+          </div>
+          <h1 class="text-2xl font-black text-white">{cat.name}</h1>
+          <p class="text-sm text-[#a1a1a1] mt-1">{cat.short_desc}</p>
+        </div>
+      </div>
+      <p class="text-[#a1a1a1] leading-relaxed text-sm">{cat.overview}</p>
+    </div>
+
+    <!-- Why not simple -->
+    <div class="rounded-xl border border-orange-500/20 bg-orange-500/5 px-5 py-4">
+      <p class="text-xs font-semibold text-orange-400 uppercase tracking-widest mb-2">Tại sao không đơn giản?</p>
+      <p class="text-sm text-[#a1a1a1] leading-relaxed">{cat.why_not_simple}</p>
+    </div>
+
+    <!-- Two-col: Commands + Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+
+      <!-- Left: Command Cards -->
+      <div class="space-y-3">
+        <h2 class="text-base font-semibold text-white">{catCommands.length} lệnh trong danh mục này</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          {catCommands.map((cmd: any) => (
+            <a href={`/commands/${cmd.id}`}
+              class="group rounded-xl border border-[#2a2a2a] bg-[#111111]/80 hover:bg-[#161616] hover:border-orange-500/30 p-4 transition-all duration-200 flex flex-col gap-2 overflow-hidden relative">
+              <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-orange-500/[0.03] to-transparent pointer-events-none"></div>
+              <div class="flex items-start justify-between relative">
+                <code class="font-mono text-sm font-semibold text-white">{cmd.id}</code>
+                <span class={`rounded border px-1.5 py-0.5 text-[9px] font-mono ${levelBadge(diffMap[cmd.difficulty ?? 'intermediate'])}`}>
+                  {diffMap[cmd.difficulty ?? 'intermediate']}
+                </span>
+              </div>
+              <p class="text-xs text-[#555] leading-relaxed line-clamp-2 group-hover:line-clamp-none transition-all relative">{cmd.content?.what_it_does ?? ''}</p>
+              <div class="text-[9px] font-mono text-[#333] border-t border-[#1a1a1a] pt-1.5 relative">
+                {installMap[cmd.install] ?? cmd.install ?? '—'}
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Right: Sidebar -->
+      <aside class="space-y-4">
+
+        <!-- Recommended Learning Order -->
+        <div class="rounded-xl border border-[#2a2a2a] bg-[#111111] p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-widest text-orange-400 mb-3 flex items-center gap-1.5">
+            <span>📖</span> Lộ trình học đề xuất
+          </h3>
+          <ol class="space-y-2">
+            {(cat.recommended_learning_order ?? []).map((step: any, i: number) => (
+              <li class="flex gap-3 text-xs">
+                <span class="flex items-center justify-center h-5 w-5 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 font-mono text-[10px] shrink-0">{i + 1}</span>
+                <div>
+                  <code class="font-mono text-orange-300">{step.cmd}</code>
+                  <p class="text-[#555] mt-0.5 leading-relaxed">{step.reason}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <!-- Common Mistakes -->
+        {cat.common_mistakes && cat.common_mistakes.length > 0 && (
+          <div class="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-red-400 mb-3 flex items-center gap-1.5">
+              <span>⚠️</span> Sai lầm phổ biến
+            </h3>
+            <ul class="space-y-2">
+              {cat.common_mistakes.map((m: string) => (
+                <li class="flex gap-2 text-xs text-[#a1a1a1]">
+                  <span class="text-red-400 shrink-0 mt-0.5">✗</span>
+                  <span>{m}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <!-- Upgrade Path -->
+        {cat.upgrade_path && (
+          <div class="rounded-xl border border-[#2a2a2a] bg-[#111111] p-4">
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-[#555] mb-2">↑ Lộ trình nâng cấp</h3>
+            <p class="text-xs text-[#666] leading-relaxed">{cat.upgrade_path}</p>
+          </div>
+        )}
+
+        <!-- Comparison Pages -->
+        {comparisonPages.length > 0 && (
+          <div class="rounded-xl border border-[#2a2a2a] bg-[#111111] p-4">
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-[#555] mb-3 flex items-center gap-1.5">
+              <span>⚖️</span> Trang so sánh
+            </h3>
+            <div class="flex flex-wrap gap-1.5">
+              {comparisonPages.map((cp: string) => (
+                <a href={`/comparisons/${cp}`}
+                  class="rounded-full border border-[#2a2a2a] bg-[#0a0a0a] px-2.5 py-1 text-[10px] font-mono text-[#555] hover:text-orange-300 hover:border-orange-500/30 transition-all">
+                  {cp.replace(/-/g, ' vs. ')}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </aside>
+    </div>
+
+  </main>
+</Layout>

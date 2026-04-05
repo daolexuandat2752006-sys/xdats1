@@ -1,0 +1,370 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import categoriesData from '../../../public/js/data/categories.json';
+import commandsData  from '../../../public/js/data/commands.json';
+
+export function getStaticPaths() {
+  const seen = new Set<string>();
+  return commandsData.commands
+    .filter((cmd: typeof commandsData.commands[0]) => {
+      if (seen.has(cmd.id)) return false;
+      seen.add(cmd.id);
+      return true;
+    })
+    .map((cmd: typeof commandsData.commands[0]) => ({
+      params: { cmd: cmd.id },
+      props:  { cmd, allCommands: commandsData.commands, allCategories: categoriesData.categories },
+    }));
+}
+
+const { cmd, allCommands, allCategories } = Astro.props;
+const c = cmd;
+
+// helpers
+const diffMap: Record<string, string> = {
+  beginner: 'Cơ bản', intermediate: 'Trung cấp', advanced: 'Nâng cao',
+};
+const installMap: Record<string, string> = {
+  builtin: 'Có sẵn', ssc: 'SSC', github: 'GitHub',
+};
+
+const levelBadge = (l: string) => {
+  if (l === 'Cơ bản')    return 'bg-green-500/10 text-green-400 border-green-500/20';
+  if (l === 'Trung cấp') return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
+  return 'bg-red-500/10 text-red-400 border-red-500/20';
+};
+
+const installBadge = (i: string) => {
+  const m = installMap[i] ?? i ?? 'Khác';
+  return m;
+};
+
+// find commands in same category (syllabus)
+const categoryCommands = allCommands.filter((c2: any) => c2.category === c.category);
+
+// breadcrumb category name
+const catObj = allCategories.find((cat: any) => cat.id === c.category);
+const catName = catObj?.name ?? c.category;
+
+// related commands from JSON
+const relatedCmds = (c.related_commands ?? []).map((rid: string) =>
+  allCommands.find((ac: any) => ac.id === rid)
+).filter(Boolean);
+
+// comparison pages from JSON
+const comparisonPages = c.comparison_pages ?? [];
+
+// learning order from categories
+const catLearningOrder = catObj?.recommended_learning_order ?? [];
+
+// escape for HTML
+const esc = (s: string) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+---
+
+<Layout title={`${c.name} — ${catName} · StatGate`} description={c.content?.what_it_does ?? ''}>
+  <!-- NAV + PROGRESS -->
+  <div class="h-16"></div>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+
+    <!-- ── LEFT SIDEBAR ── -->
+    <aside class="space-y-4">
+
+      <!-- Breadcrumb -->
+      <nav class="text-xs text-[#555] flex items-center gap-1.5 flex-wrap">
+        <a href="/" class="hover:text-orange-400 transition-colors">Trang chủ</a>
+        <span>›</span>
+        <a href={`/categories/${c.category}`} class="hover:text-orange-400 transition-colors">{catName}</a>
+        <span>›</span>
+        <span class="text-white">{c.name}</span>
+      </nav>
+
+      <!-- LMS Syllabus -->
+      <div class="rounded-xl border border-[#2a2a2a] bg-[#111111] p-4">
+        <h3 class="text-xs font-semibold uppercase tracking-widest text-orange-400 mb-3 flex items-center gap-1.5">
+          <span>📚</span> Chương trình học
+        </h3>
+        <ul class="space-y-0.5">
+          {categoryCommands.map((cc: any) => (
+            <li>
+              <a
+                href={`/commands/${cc.id}`}
+                class={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition-all duration-150 ${
+                  cc.id === c.id
+                    ? 'bg-orange-500/15 text-orange-300 font-semibold border border-orange-500/30'
+                    : 'text-[#666] hover:text-white hover:bg-white/[0.04]'
+                }`}
+              >
+                <span class={`h-1.5 w-1.5 rounded-full shrink-0 ${cc.id === c.id ? 'bg-orange-400' : 'bg-[#333]'}`}></span>
+                <code class="font-mono">{cc.id}</code>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Page TOC -->
+      <div class="rounded-xl border border-[#2a2a2a] bg-[#111111] p-4">
+        <h3 class="text-xs font-semibold uppercase tracking-widest text-[#555] mb-3 flex items-center gap-1.5">
+          <span>📍</span> Nội dung trang
+        </h3>
+        <ul class="space-y-0.5">
+          {[
+            ['what-it-does', 'Lệnh này làm gì?'],
+            ['problem', 'Vấn đề giải quyết'],
+            ['algorithm', 'Mô hình / Thuật toán'],
+            ['when-to-use', 'Sử dụng / Tránh'],
+            ['assumptions', 'Giả định chính'],
+            ['output', 'Kết quả cần đọc'],
+            ['mistake', 'Sai lầm phổ biến'],
+            ['basic-syntax', 'Cú pháp cơ bản'],
+            ['advanced-syntax', 'Nâng cao'],
+            ['recommendation', 'Khuyến nghị'],
+          ].map(([id, label]) => (
+            <li>
+              <a href={`#${id}`} class="flex items-center gap-2 text-[11px] text-[#555] hover:text-orange-300 py-1 transition-colors">
+                <span class="h-0.5 w-0.5 rounded-full bg-[#333]"></span>
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Related Comparisons -->
+      {comparisonPages.length > 0 && (
+        <div class="rounded-xl border border-[#2a2a2a] bg-[#111111] p-4">
+          <h3 class="text-xs font-semibold uppercase tracking-widest text-[#555] mb-3 flex items-center gap-1.5">
+            <span>⚖️</span> So sánh liên quan
+          </h3>
+          <ul class="space-y-1">
+            {comparisonPages.map((cp: string) => (
+              <li>
+                <a href={`/comparisons/${cp}`} class="text-xs text-[#555] hover:text-orange-300 transition-colors font-mono">
+                  {cp.replace(/-/g, ' vs. ')}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+    </aside>
+
+    <!-- ── MAIN CONTENT ── -->
+    <article class="rounded-2xl border border-[#2a2a2a] bg-[#111111] p-6 space-y-8">
+
+      <!-- Header -->
+      <div class="space-y-3 border-b border-[#1e1e1e] pb-6">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class={`rounded border px-2.5 py-1 text-[10px] font-mono font-semibold ${levelBadge(diffMap[c.difficulty ?? 'intermediate'])}`}>
+            {diffMap[c.difficulty ?? 'intermediate']}
+          </span>
+          <span class="rounded border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-[10px] font-mono text-blue-300">
+            {installBadge(c.install)}
+          </span>
+          {c.tags?.keywords?.slice(0, 6).map((kw: string) => (
+            <span class="rounded-full bg-white/5 border border-[#2a2a2a] px-2.5 py-0.5 text-[10px] text-[#555]">{kw}</span>
+          ))}
+        </div>
+        <h1 class="text-3xl font-black text-white">
+          <code class="font-mono text-orange-400 bg-transparent">{c.name}</code>
+        </h1>
+        <p class="text-sm text-[#666]">{c.full_name}</p>
+      </div>
+
+      <!-- 1. Lệnh này làm gì? -->
+      <section id="what-it-does">
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+          <span class="flex items-center justify-center h-7 w-7 rounded-full bg-orange-500/20 text-orange-400 text-sm font-mono shrink-0">1</span>
+          Lệnh này làm gì?
+        </h2>
+        <p class="text-[#a1a1a1] leading-relaxed">{c.content?.what_it_does ?? 'N/A'}</p>
+      </section>
+
+      <!-- 2. Vấn đề giải quyết -->
+      <section id="problem">
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+          <span class="flex items-center justify-center h-7 w-7 rounded-full bg-orange-500/20 text-orange-400 text-sm font-mono shrink-0">2</span>
+          Vấn đề thực tế cần giải quyết
+        </h2>
+        <p class="text-[#a1a1a1] leading-relaxed">{c.content?.problem_it_solves ?? 'N/A'}</p>
+      </section>
+
+      <!-- 3. Mô hình / Thuật toán -->
+      <section id="algorithm">
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+          <span class="flex items-center justify-center h-7 w-7 rounded-full bg-orange-500/20 text-orange-400 text-sm font-mono shrink-0">3</span>
+          Mô hình / Thuật toán đằng sau
+        </h2>
+        <p class="text-[#a1a1a1] leading-relaxed mb-4">{c.content?.algorithm ?? 'N/A'}</p>
+        {c.content?.interpretation && (
+          <div class="rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-3">
+            <p class="text-xs font-semibold text-[#555] uppercase tracking-widest mb-1.5">Diễn giải hệ số</p>
+            <p class="text-sm text-[#a1a1a1] leading-relaxed">{c.content.interpretation}</p>
+          </div>
+        )}
+      </section>
+
+      <!-- 4. Khi nào dùng / Khi nào tránh -->
+      <section id="when-to-use">
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+          <span class="flex items-center justify-center h-7 w-7 rounded-full bg-orange-500/20 text-orange-400 text-sm font-mono shrink-0">4</span>
+          Khi nào dùng / Khi nào tránh
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="rounded-xl border border-green-500/20 bg-green-500/5 p-4">
+            <p class="text-xs font-semibold text-green-400 mb-2">✅ Dùng khi</p>
+            <ul class="space-y-1.5">
+              {(c.content?.when_to_use ?? []).map((item: string) => (
+                <li class="flex gap-2 text-sm text-[#a1a1a1]">
+                  <span class="text-green-400 shrink-0 mt-0.5">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+            <p class="text-xs font-semibold text-red-400 mb-2">❌ Tránh khi</p>
+            <ul class="space-y-1.5">
+              {(c.content?.when_not_to_use ?? []).map((item: string) => (
+                <li class="flex gap-2 text-sm text-[#a1a1a1]">
+                  <span class="text-red-400 shrink-0 mt-0.5">✗</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Giả định chính -->
+      {c.content?.assumptions && c.content.assumptions.length > 0 && (
+        <section id="assumptions">
+          <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+            <span class="flex items-center justify-center h-7 w-7 rounded-full bg-orange-500/20 text-orange-400 text-sm font-mono shrink-0">5</span>
+            Giả định chính
+          </h2>
+          <ul class="space-y-2">
+            {c.content.assumptions.map((a: string) => (
+              <li class="flex gap-2 text-sm text-[#a1a1a1]">
+                <span class="h-1.5 w-1.5 rounded-full bg-orange-400 shrink-0 mt-1.5"></span>
+                <span>{a}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <!-- 6. Kết quả cần đọc -->
+      {c.content?.output && (
+        <section id="output">
+          <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+            <span class="flex items-center justify-center h-7 w-7 rounded-full bg-orange-500/20 text-orange-400 text-sm font-mono shrink-0">6</span>
+            Kết quả cần đọc
+          </h2>
+          <ul class="space-y-2">
+            {c.content.output.map((o: string) => (
+              <li class="flex gap-2 text-sm text-[#a1a1a1]">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0 mt-1.5"></span>
+                <span>{o}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <!-- 7. Sai lầm phổ biến -->
+      <section id="mistake">
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+          <span class="flex items-center justify-center h-7 w-7 rounded-full bg-red-500/20 text-red-400 text-sm font-mono shrink-0">⚠</span>
+          Sai lầm phổ biến
+        </h2>
+        <ul class="space-y-2">
+          {c.content?.common_mistakes?.map((m: string) => (
+            <li class="flex gap-2 text-sm text-[#a1a1a1] rounded-xl border border-red-500/10 bg-red-500/5 px-4 py-2.5">
+              <span class="text-red-400 shrink-0 mt-0.5">✗</span>
+              <span>{m}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- 8. Cú pháp cơ bản -->
+      <section id="basic-syntax">
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+          <span class="flex items-center justify-center h-7 w-7 rounded-full bg-orange-500/20 text-orange-400 text-sm font-mono shrink-0">8</span>
+          Cú pháp cơ bản
+        </h2>
+        {c.content?.syntax?.map((s: any) => (
+          <div class="rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] overflow-hidden mb-3">
+            {s.description && (
+              <p class="text-xs text-[#555] px-4 py-2 border-b border-[#1a1a1a]">{s.description}</p>
+            )}
+            <div class="p-4">
+              <pre class="font-mono text-sm text-orange-300 whitespace-pre-wrap overflow-x-auto"><code>{s.code ?? ''}</code></pre>
+            </div>
+          </div>
+        ))}
+        {c.content?.options && Object.keys(c.content.options).length > 0 && (
+          <div class="mt-3">
+            <p class="text-xs font-semibold text-[#555] uppercase tracking-widest mb-2">Tùy chọn chính</p>
+            <div class="space-y-2">
+              {Object.entries(c.content.options).slice(0, 8).map(([opt, desc]) => (
+                <div class="flex gap-3 text-sm">
+                  <code class="font-mono text-orange-300 shrink-0 w-28">{opt}</code>
+                  <span class="text-[#a1a1a1]">{desc as string}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+
+      <!-- 9. Nâng cao -->
+      {c.content?.advanced_usage && c.content.advanced_usage.length > 0 && (
+        <section id="advanced-syntax">
+          <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+            <span class="flex items-center justify-center h-7 w-7 rounded-full bg-orange-500/20 text-orange-400 text-sm font-mono shrink-0">9</span>
+            Cách dùng nâng cao
+          </h2>
+          <ul class="space-y-2">
+            {c.content.advanced_usage.map((a: string) => (
+              <li class="flex gap-2 text-sm text-[#a1a1a1]">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0 mt-1.5"></span>
+                <span>{a}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <!-- 10. Khuyến nghị -->
+      <section id="recommendation">
+        <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+          <span class="flex items-center justify-center h-7 w-7 rounded-full bg-green-500/20 text-green-400 text-sm font-mono shrink-0">✓</span>
+          Khuyến nghị
+        </h2>
+        <div class="rounded-xl border border-green-500/20 bg-green-500/5 px-4 py-4">
+          <p class="text-sm text-[#a1a1a1] leading-relaxed">{c.content?.recommendations ?? 'N/A'}</p>
+        </div>
+      </section>
+
+      <!-- Related Commands -->
+      {relatedCmds.length > 0 && (
+        <div class="pt-4 border-t border-[#1e1e1e]">
+          <p class="text-xs font-semibold text-[#555] uppercase tracking-widest mb-3">Lệnh liên quan</p>
+          <div class="flex flex-wrap gap-2">
+            {relatedCmds.map((rc: any) => (
+              <a href={`/commands/${rc.id}`}
+                class="rounded-full border border-[#2a2a2a] bg-[#161616] px-3 py-1.5 text-xs font-mono text-[#a1a1a1] hover:text-orange-400 hover:border-orange-500/30 transition-all duration-200">
+                {rc.id}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+    </article>
+  </main>
+</Layout>
