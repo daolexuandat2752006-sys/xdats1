@@ -1,176 +1,91 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import categoriesData from '../../../STATA/assets-20260402T183209Z-1-001/assets/js/data/categories.json';
+import commandsData  from '../../../STATA/assets-20260402T183209Z-1-001/assets/js/data/commands.json';
 
-// ─── TABS ──────────────────────────────────────────────────────────────────────
 const tabs = [
-  { id: 'stata',   label: 'Stata',    color: 'orange', icon: 'S',  desc: 'Phần mềm kinh tế lượng — từ OLS đến Double ML' },
-  { id: 'r',       label: 'R',        color: 'amber',  icon: 'R',  desc: 'Ngôn ngữ & hệ sinh thái thống kê mã nguồn mở' },
-  { id: 'spss',    label: 'SPSS',     color: 'yellow',icon: 'SP', desc: 'Nền tảng phân tích thống kê của IBM' },
-  { id: 'pls',     label: 'PLS-SEM',  color: 'lime',   icon: 'PL', desc: 'Mô hình phương trình cấu trúc bán tham số' },
+  { id: 'stata', label: 'Stata',    color: 'orange', icon: 'S',  desc: 'Phần mềm kinh tế lượng — từ OLS cơ bản đến Double ML' },
+  { id: 'r',     label: 'R',         color: 'amber',  icon: 'R',  desc: 'Ngôn ngữ & hệ sinh thái thống kê mã nguồn mở' },
+  { id: 'spss',  label: 'SPSS',      color: 'yellow', icon: 'SP', desc: 'Nền tảng phân tích thống kê của IBM' },
+  { id: 'pls',   label: 'PLS-SEM',   color: 'lime',   icon: 'PL', desc: 'Mô hình phương trình cấu trúc bán tham số' },
 ];
 
-// ─── COLOR MAP ────────────────────────────────────────────────────────────────
-const colorMap: Record<string, {
-  indicatorBg: string; indicatorBorder: string; indicatorShadow: string;
-  badge: string; badgeText: string; rgb: string;
-}> = {
-  orange:  { indicatorBg: 'rgba(249,115,22,0.12)',  indicatorBorder: 'rgba(249,115,22,0.25)',  indicatorShadow: '0 0 20px rgba(249,115,22,0.15)',  badge: 'bg-orange-500/10 text-orange-300 border-orange-500/20', badgeText: 'text-orange-400', rgb: '249,115,22' },
-  amber:   { indicatorBg: 'rgba(245,158,11,0.12)',  indicatorBorder: 'rgba(245,158,11,0.25)',  indicatorShadow: '0 0 20px rgba(245,158,11,0.15)',  badge: 'bg-amber-500/10 text-amber-300 border-amber-500/20',   badgeText: 'text-amber-400',  rgb: '245,158,11' },
-  yellow:  { indicatorBg: 'rgba(234,179,8,0.12)',   indicatorBorder: 'rgba(234,179,8,0.25)',   indicatorShadow: '0 0 20px rgba(234,179,8,0.15)',   badge: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20', badgeText: 'text-yellow-400', rgb: '234,179,8' },
-  lime:    { indicatorBg: 'rgba(132,204,22,0.12)',  indicatorBorder: 'rgba(132,204,22,0.25)',  indicatorShadow: '0 0 20px rgba(132,204,22,0.15)',  badge: 'bg-lime-500/10 text-lime-300 border-lime-500/20',    badgeText: 'text-lime-400',   rgb: '132,204,22' },
-};
 const colorSchemes = ['orange', 'amber', 'yellow', 'lime'];
 const positions    = ['3px', 'calc(25% + 3px)', 'calc(50% + 3px)', 'calc(75% + 3px)'];
 
-// ─── STATA CATEGORIES ────────────────────────────────────────────────────────
-const stataCategories = [
-  {
-    id: 'ols-diagnostics',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
-    name: 'OLS & Kiểm định',
-    desc: 'Hồi quy tuyến tính, suy luận vững và kiểm định đặc điểm mô hình.',
-    count: '9 lệnh',
-    detail: 'reg, SE vững, estout, binscatter2, vif, hettest…',
-    level: 'Cơ bản',
-    levelColor: 'bg-green-500/10 text-green-300 border-green-500/20',
-  },
-  {
-    id: 'limited-dependent',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-    name: 'Biến phụ thuộc giới hạn',
-    desc: 'Mô hình nhị phân, kiểm duyệt và rút cụt bằng hợp lý cực đại.',
-    count: '4 lệnh',
-    detail: 'logit, probit, tobit, margins',
-    level: 'Trung cấp',
-    levelColor: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20',
-  },
-  {
-    id: 'panel-data',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`,
-    name: 'Dữ liệu bảng',
-    desc: 'Tác động cố định, ngẫu nhiên và GMM bảng động cho dữ liệu theo thời gian.',
-    count: '8 lệnh',
-    detail: 'xtreg fe, reghdfe, xtabond2, boottest…',
-    level: 'Trung cấp',
-    levelColor: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20',
-  },
-  {
-    id: 'iv-endogeneity',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
-    name: 'Biến công cụ & Nội sinh',
-    desc: 'Biến công cụ và 2SLS để nhận dạng nhân quả khi biến giải thích bị nội sinh.',
-    count: '3 lệnh',
-    detail: 'ivregress, ivreg2, ivreghdfe',
-    level: 'Nâng cao',
-    levelColor: 'bg-red-500/10 text-red-300 border-red-500/20',
-  },
-  {
-    id: 'time-series',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
-    name: 'Chuỗi thời gian',
-    desc: 'Kiểm định nghiệm đơn vị, mô hình ARIMA và VAR cho động thái kinh tế vĩ mô.',
-    count: '3 lệnh',
-    detail: 'dfuller, arima, var',
-    level: 'Trung cấp',
-    levelColor: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20',
-  },
-  {
-    id: 'causal-inference',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
-    name: 'Suy diễn nhân quả',
-    desc: 'DID, ghép điểm xu hướng và gián đoạn hồi quy để đánh giá chính sách.',
-    count: '8 lệnh',
-    detail: 'diff, rdrobust, rdlocrand, psacalc…',
-    level: 'Nâng cao',
-    levelColor: 'bg-red-500/10 text-red-300 border-red-500/20',
-  },
-  {
-    id: 'staggered-did',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M2 6h14M2 18h10"/></svg>`,
-    name: 'DID theo giai đoạn',
-    desc: 'DID Callaway-Sant\'Anna, DID kép mạnh và kiểm soát tổng hợp — bộ công cụ hiện đại.',
-    count: '8 lệnh',
-    detail: 'csdid, eventstudyinteract, honestdid, synth…',
-    level: 'Nâng cao',
-    levelColor: 'bg-red-500/10 text-red-300 border-red-500/20',
-  },
-  {
-    id: 'ml-econometrics',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><line x1="12" y1="7" x2="5" y2="17"/><line x1="12" y1="7" x2="19" y2="17"/></svg>`,
-    name: 'Kinh tế lượng ML',
-    desc: 'Lasso, học máy kép và chọn lựa biến kiểm soát chiều cao.',
-    count: '3 lệnh',
-    detail: 'pdslasso, ddml, lasso2',
-    level: 'Nâng cao',
-    levelColor: 'bg-red-500/10 text-red-300 border-red-500/20',
-  },
-  {
-    id: 'data-infrastructure',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
-    name: 'Hạ tầng dữ liệu',
-    desc: 'Tiền xử lý, kiểm toán chất lượng, xử lý dữ liệu thiếu và ngoại lệ.',
-    count: '7 lệnh',
-    detail: 'misstable, mi-impute, winsor2, ihs…',
-    level: 'Cơ bản',
-    levelColor: 'bg-green-500/10 text-green-300 border-green-500/20',
-  },
-  {
-    id: 'sensitivity-robustness',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-    name: 'Kiểm tra độ nhạy & Vững',
-    desc: 'Kiểm tra sức chịu đựng nhận dạng nhân quả và độ ổn định hệ số.',
-    count: '5 lệnh',
-    detail: 'honestdid, psacalc, wyoung, rwolf…',
-    level: 'Nâng cao',
-    levelColor: 'bg-red-500/10 text-red-300 border-red-500/20',
-  },
-  {
-    id: 'publication-standards',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
-    name: 'Tiêu chuẩn công bố',
-    desc: 'Báo cáo chuyên nghiệp, định dạng bảng và quy trình tái tạo.',
-    count: '5 lệnh',
-    detail: 'estout, outreg2, coefplot, putdocx…',
-    level: 'Trung cấp',
-    levelColor: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20',
-  },
-];
+// ─── STATA DATA ────────────────────────────────────────────────────────────────
+// Computed from source JSON
+const sourceCategories = categoriesData.categories;
+const allCommands     = commandsData.commands;
 
-// ─── STATA: BEST PACKAGES TABLE ───────────────────────────────────────────────
-const stataBestPackages = [
-  { use: 'Ước lượng OLS cơ bản',       cmd: 'reg + robust',          level: 'Cơ bản',  note: 'Luôn dùng SE vững — không bao giờ SE cổ điển' },
-  { use: 'Bảng hồi quy công bố',        cmd: 'estout / esttab',       level: 'Trung cấp', note: 'Tiêu chuẩn vàng — đầu ra LaTeX/HTML/CSV linh hoạt' },
-  { use: 'Biến kết quả nhị phân',       cmd: 'logit + margins',       level: 'Cơ bản',  note: 'Luôn tính AME — không báo cáo hệ số thô' },
-  { use: 'Dữ liệu bảng — thận trọng',    cmd: 'xtreg, fe',             level: 'Trung cấp', note: 'Luôn cluster theo đơn vị bảng' },
-  { use: 'Dữ liệu bảng — nhiều FE',     cmd: 'reghdfe',               level: 'Trung cấp', note: 'Hấp thụ nhiều hiệu ứng cố định chiều cao hiệu quả' },
-  { use: 'Hồi quy IV',                  cmd: 'ivreg2',                 level: 'Trung cấp', note: 'KP rk Wald F cho công cụ yếu với cluster SE' },
-  { use: 'DID theo giai đoạn',          cmd: 'csdid',                 level: 'Nâng cao', note: 'Bắt buộc cho thời điểm can thiệp so le — KHÔNG dùng TWFE' },
-  { use: 'Thiết kế RD',                 cmd: 'rdrobust',               level: 'Trung cấp', note: 'Luôn chạy rddensity + rdplot đi kèm' },
-  { use: 'Ghép cặp điểm xu hướng',      cmd: 'psmatch2 + pstest',     level: 'Trung cấp', note: 'Chỉ dùng khi giả định lựa chọn trên quan sát là hợp lý' },
-  { use: 'Kiểm soát chiều cao',         cmd: 'ddml',                  level: 'Nâng cao', note: 'Double ML với cross-fitting — suy luận hợp lệ sau lựa chọn biến' },
-];
+// Map difficulty: beginner→Cơ bản, intermediate→Trung cấp, advanced→Nâng cao
+const levelMap: Record<string, string> = {
+  beginner: 'Cơ bản', intermediate: 'Trung cấp', advanced: 'Nâng cao',
+};
 
-// ─── STATA: QUICK PATH ─────────────────────────────────────────────────────────
+const stataCategories = sourceCategories.map((cat: typeof sourceCategories[0]) => {
+  const cmdCount  = cat.commands.length;
+  const level     = levelMap['intermediate'] ?? 'Trung cấp'; // infer from category
+  // Re-infer level from category id patterns
+  const basicRe   = /^(ols-diagnostics|data-infrastructure)$/;
+  const midRe     = /^(limited-dependent|panel-data|time-series|causal-inference|publication-standards)$/;
+  const advRe      = /^(iv-endogeneity|staggered-did|ml-econometrics|sensitivity-robustness)$/;
+  let   levelOut  = 'Trung cấp';
+  if      (basicRe.test(cat.id)) levelOut = 'Cơ bản';
+  else if (midRe.test(cat.id))   levelOut = 'Trung cấp';
+  else if (advRe.test(cat.id))   levelOut = 'Nâng cao';
+
+  return {
+    id:       cat.id,
+    name:     cat.name,
+    icon:     cat.icon,
+    level:    levelOut,
+    count:    `${cmdCount} lệnh`,
+    detail:   cat.commands.slice(0, 5).join(' · ') + (cmdCount > 5 ? '…' : ''),
+    overview: cat.overview,
+    commonMistakes: cat.common_mistakes ?? [],
+    upgradePath: cat.upgrade_path ?? '',
+    recommendedOrder: cat.recommended_learning_order ?? [],
+  };
+});
+
+// Build best packages from commands data + enriched with category context
+const pkgRows: Array<{ use: string; cmd: string; level: string; note: string }> = [];
+sourceCategories.forEach((cat: typeof sourceCategories[0]) => {
+  const cmds = cat.commands;
+  if (cmds.length === 0) return;
+  const firstCmd = cmds[0];
+  const cmdObj   = allCommands.find((c: typeof allCommands[0]) => c.id === firstCmd);
+  if (!cmdObj) return;
+  const diff = levelMap[cmdObj.difficulty ?? 'intermediate'] ?? 'Trung cấp';
+  // Build a summary note from recommended_learning_order
+  const firstStep = (cat.recommended_learning_order ?? [])[0];
+  const note = firstStep ? firstStep.reason : (cmdObj.content?.what_it_does ?? '').slice(0, 80);
+  pkgRows.push({ use: cat.name, cmd: cmds.slice(0, 3).join(' · '), level: diff, note });
+});
+
+const stataBestPackages = pkgRows.slice(0, 10);
+const totalCmdCount = allCommands.length;
+
 const stataPathBeginner = [
-  { step: 1, cmd: 'reg',        label: 'Hồi quy OLS (reg)' },
-  { step: 2, cmd: 'robust',    label: 'Luôn dùng SE vững' },
-  { step: 3, cmd: 'logit',       label: 'Biến nhị phân (logit + margins)' },
-  { step: 4, cmd: 'xtreg-fe',  label: 'Dữ liệu bảng (xtreg, fe)' },
-  { step: 5, cmd: 'diff',      label: 'Đánh giá chính sách (DID)' },
-  { step: 6, cmd: 'estout',     label: 'Bảng kết quả công bố (estout)' },
+  'reg — Hồi quy OLS',
+  'robust — Luôn dùng SE vững',
+  'logit + margins — Biến nhị phân',
+  'xtreg, fe — Dữ liệu bảng',
+  'diff — Đánh giá chính sách (DID)',
+  'estout — Bảng kết quả công bố',
 ];
 
 const stataPathResearch = [
-  { cmd: 'ivreg2',           label: 'Ước lượng IV (ivreg2)' },
-  { cmd: 'reghdfe',          label: 'FE chiều cao (reghdfe)' },
-  { cmd: 'csdid',           label: 'DID theo giai đoạn (csdid)' },
-  { cmd: 'boottest',         label: 'Suy luận ít nhóm (boottest)' },
-  { cmd: 'honestdid',       label: 'Kiểm tra độ nhạy DID (honestdid)' },
-  { cmd: 'ddml',             label: 'Kiểm soát chiều cao (ddml)' },
-  { cmd: 'rdrobust',        label: 'Quy trình RD đầy đủ' },
+  'ivreg2 — Ước lượng IV',
+  'reghdfe — FE chiều cao',
+  'csdid — DID theo giai đoạn',
+  'boottest — Suy luận ít nhóm',
+  'honestdid — Kiểm tra độ nhạy DID',
+  'ddml — Kiểm soát chiều cao',
+  'rdrobust — Quy trình RD đầy đủ',
 ];
 
-// ─── STATA: COMPARISONS ────────────────────────────────────────────────────────
 const stataComparisons = [
   'reg vs. SE vững', 'FE vs. RE', 'FE vs. xtabond2',
   'ivregress vs. ivreg2', 'DID đơn vs. csdid',
@@ -180,530 +95,735 @@ const stataComparisons = [
   'boottest vs. cluster SE',
 ];
 
-// ─── STATA: CRITICAL NOTES ────────────────────────────────────────────────────
-const stataWarnings = [
-  { type: 'danger',   title: '✗ Sai lầm phổ biến', body: 'TWFE cho DID theo giai đoạn — dùng i.treated##i.time bị chệch khi tác động không đồng nhất. Luôn dùng csdid.' },
-  { type: 'danger',   title: '✗ Biến công cụ yếu', body: 'Thống kê F giai đoạn 1 < 10 mà không báo cáo. Dùng ivreg2 + KP rk Wald F — không dùng Cragg-Donald với cluster SE.' },
-  { type: 'warning',  title: '⚠ Lasso thô cho suy diễn nhân quả', body: 'Dùng pdslasso hoặc ddml với cross-fitting. Lasso thuần cho dự báo thì ổn — không dùng trực tiếp cho suy luận nhân quả.' },
-  { type: 'tip',      title: '✓ Tiêu chuẩn vàng', body: 'ivreg2, rdrobust, csdid, estout, binscatter2, reghdfe — dùng cho công việc nghiên cứu chuyên sâu.' },
-  { type: 'warning',  title: '⚠ Dùng thận trọng', body: 'psmatch2, xtabond2, synth — mạnh nhưng dễ dùng sai. Hiểu chẩn đoán quan trọng (Hansen J, cân bằng biến, pre-trend) trước khi áp dụng.' },
-];
-
-// ─── R CONTENT ────────────────────────────────────────────────────────────────
+// ─── R DATA ─────────────────────────────────────────────────────────────────
 const rPackages = [
-  { label: 'dplyr / tidyr', tag: 'Thao tác dữ liệu', note: 'Tidyverse — chuẩn vàng thao tác dữ liệu' },
-  { label: 'ggplot2', tag: 'Đồ họa', note: 'Grammar of graphics — trực quan hóa mạnh mẽ nhất' },
-  { label: 'fixest', tag: 'FE & IV nhanh', note: 'Ước lượng FE và IV tốc độ cao cho dữ liệu lớn' },
-  { label: 'plm', tag: 'Dữ liệu bảng', note: 'Mô hình bảng tuyến tính chuẩn R' },
-  { label: 'glmnet', tag: 'Lasso & Ridge', note: 'Chính quy hóa và lựa chọn biến chiều cao' },
-  { label: 'MatchIt', tag: 'Ghép cặp', note: 'Thực thi nhiều thuật toán matching cho suy luận nhân quả' },
-  { label: 'DeclareDesign', tag: 'Thiết kế nghiên cứu', note: 'Thiết kế và mô phỏng nghiên cứu ngẫu nhiên' },
-  { label: 'broom', tag: 'Dọn dẹp kết quả', note: 'Chuyển kết quả mô hình thành tidy data frame' },
-  { label: 'gt / gtExtras', tag: 'Bảng đẹp', note: 'Tạo bảng xuất bản chất lượng cao trong R' },
-  { label: 'fabricatr', tag: 'Mô phỏng dữ liệu', note: 'Mô phỏng dữ liệu quan sát cho nghiên cứu' },
-  { label: 'DoubleML', tag: 'Double ML', note: 'Double/Debiased ML chuẩn Chernozhukov et al. 2018' },
-  { label: 'rdrobust (R)', tag: 'RDD trong R', note: 'Triển khai RD trong hệ sinh thái R' },
+  { label: 'dplyr / tidyr',      tag: 'Thao tác dữ liệu',  note: 'Tidyverse — chuẩn vàng thao tác dữ liệu' },
+  { label: 'ggplot2',             tag: 'Đồ họa',             note: 'Grammar of Graphics — trực quan hóa mạnh mẽ nhất' },
+  { label: 'fixest',              tag: 'FE & IV nhanh',      note: 'Ước lượng FE và IV tốc độ cao cho dữ liệu lớn' },
+  { label: 'plm',                 tag: 'Dữ liệu bảng',       note: 'Mô hình bảng tuyến tính chuẩn R' },
+  { label: 'glmnet',              tag: 'Lasso & Ridge',       note: 'Chính quy hóa và lựa chọn biến chiều cao' },
+  { label: 'MatchIt',             tag: 'Ghép cặp',            note: 'Nhiều thuật toán matching cho suy luận nhân quả' },
+  { label: 'DeclareDesign',       tag: 'Thiết kế nghiên cứu', note: 'Thiết kế và mô phỏng nghiên cứu ngẫu nhiên' },
+  { label: 'broom',               tag: 'Dọn dẹp kết quả',    note: 'Chuyển kết quả mô hình thành tidy data frame' },
+  { label: 'gt / gtExtras',       tag: 'Bảng đẹp',            note: 'Tạo bảng xuất bản chất lượng cao trong R' },
+  { label: 'DoubleML',            tag: 'Double ML',            note: 'Double/Debiased ML chuẩn Chernozhukov et al. 2018' },
 ];
 
 const rMistakes = [
-  { label: 'Trộn base R và tidyverse — dùng [ ] thay vì filter() / select()', severity: 'Trung bình' },
-  { label: 'summary(lm()) không đủ — cần robust SE qua sandwich package', severity: 'Nghiêm trọng' },
-  { label: 'Data leakage: transform trước khi chia train/test', severity: 'Nghiêm trọng' },
-  { label: 'glmnet mà không cross-validate lambda — overfitting nghiêm trọng', severity: 'Nghiêm trọng' },
-  { label: 'Mean imputation cho missing mà không báo cáo N missing', severity: 'Nghiêm trọng' },
-  { label: 'ggplot gán aesthetics sai — nhầm biến x/y', severity: 'Cơ bản' },
+  { text: 'Trộn base R và tidyverse — dùng [ ] thay vì filter() / select()', sev: 'Trung bình',   dot: 'yellow' },
+  { text: 'summary(lm()) không đủ — cần robust SE qua sandwich package',      sev: 'Nghiêm trọng', dot: 'red' },
+  { text: 'Data leakage: transform trước khi chia train/test',                 sev: 'Nghiêm trọng', dot: 'red' },
+  { text: 'glmnet mà không cross-validate lambda — overfitting nghiêm trọng',sev: 'Nghiêm trọng', dot: 'red' },
+  { text: 'Mean imputation cho missing mà không báo cáo N missing',            sev: 'Nghiêm trọng', dot: 'red' },
 ];
 
-// ─── SPSS CONTENT ──────────────────────────────────────────────────────────────
+// ─── SPSS DATA ────────────────────────────────────────────────────────────────
 const spssProcedures = [
-  { label: 'REGRESSION', tag: 'OLS cơ bản', note: 'Hồi quy tuyến tính đa biến' },
-  { label: 'LOGISTIC REGRESSION', tag: 'Mô hình nhị phân', note: 'Mô hình hồi quy logistic' },
-  { label: 'GENLINMIXED', tag: 'Mô hình hỗn hợp', note: 'Mô hình hỗn hợp tổng quát' },
-  { label: 'MIXED', tag: 'Linear Mixed Models', note: 'Mô hình hỗn hợp tuyến tính' },
-  { label: 'FACTOR', tag: 'Phân tích nhân tố', note: 'EFA và CFA cho thang đo' },
-  { label: 'CLUSTER', tag: 'Phân cụm K-means', note: 'Phân cụm phân cấp và K-means' },
-  { label: 'EXAMINE', tag: 'Kiểm tra phân phối', note: 'Thống kê mô tả và kiểm tra phân phối chuẩn' },
-  { label: 'RELIABILITY', tag: 'Độ tin cậy thang đo', note: 'Cronbach alpha và phân tích mục' },
-  { label: 'ROC', tag: 'Đường cong ROC', note: 'Đánh giá phân loại và AUC' },
-  { label: 'CROSSTABS', tag: 'Kiểm định độc lập', note: 'Bảng chéo và chi-square' },
+  { label: 'REGRESSION',           tag: 'OLS cơ bản',          note: 'Hồi quy tuyến tính đa biến' },
+  { label: 'LOGISTIC REGRESSION', tag: 'Mô hình nhị phân',     note: 'Mô hình hồi quy logistic' },
+  { label: 'MIXED',               tag: 'Linear Mixed Models',  note: 'Mô hình hỗn hợp tuyến tính' },
+  { label: 'GENLINMIXED',         tag: 'Mô hình hỗn hợp',       note: 'Mô hình hỗn hợp tổng quát' },
+  { label: 'FACTOR',              tag: 'Phân tích nhân tố',     note: 'EFA và CFA cho thang đo' },
+  { label: 'CLUSTER',             tag: 'Phân cụm K-means',      note: 'Phân cụm phân cấp và K-means' },
+  { label: 'RELIABILITY',          tag: 'Độ tin cậy thang đo',  note: 'Cronbach alpha và phân tích mục' },
+  { label: 'ROC',                 tag: 'Đường cong ROC',        note: 'Đánh giá phân loại và AUC' },
+  { label: 'EXAMINE',             tag: 'Kiểm tra phân phối',    note: 'Thống kê mô tả và kiểm tra phân phối chuẩn' },
+  { label: 'CROSSTABS',            tag: 'Kiểm định độc lập',    note: 'Bảng chéo và chi-square' },
 ];
 
 const spssMistakes = [
-  { label: 'Click-and-run thay vì dùng Syntax — không tái lập được', severity: 'Nghiêm trọng' },
-  { label: 'Xóa outlier bằng mắt thay vì quy tắc thống kê', severity: 'Nghiêm trọng' },
-  { label: 'EFA rồi CFA trên cùng mẫu — cross-validation', severity: 'Nghiêm trọng' },
-  { label: 'Diễn giải hệ số logistic là tác động biên — dùng ODDS RATIO', severity: 'Nghiêm trọng' },
-  { label: 'Missing > 5% mà không xử lý — listwise deletion mặc định', severity: 'Nghiêm trọng' },
-  { label: 'Cronbach alpha đánh giá unidimensionality — sai mục đích', severity: 'Trung bình' },
+  { text: 'Click-and-run thay vì dùng Syntax — không tái lập được',             sev: 'Nghiêm trọng', dot: 'red' },
+  { text: 'Xóa outlier bằng mắt thay vì quy tắc thống kê',                      sev: 'Nghiêm trọng', dot: 'red' },
+  { text: 'Diễn giải hệ số logistic là tác động biên — dùng ODDS RATIO',        sev: 'Nghiêm trọng', dot: 'red' },
+  { text: 'Missing > 5% mà không xử lý — listwise deletion mặc định',           sev: 'Nghiêm trọng', dot: 'red' },
+  { text: 'EFA rồi CFA trên cùng mẫu — cross-validation',                       sev: 'Trung bình',   dot: 'yellow' },
 ];
 
-// ─── PLS-SEM CONTENT ──────────────────────────────────────────────────────────
+// ─── PLS-SEM DATA ───────────────────────────────────────────────────────────
 const plsSoftware = [
-  { label: 'SmartPLS 4', tag: 'Phần mềm chuẩn PLS', note: 'Giao diện chuẩn ngành — tiêu chuẩn thực hành' },
-  { label: 'semPLS', tag: 'PLS-SEM trong R', note: 'Triển khai PLS-SEM bằng R' },
-  { label: 'plsdebias', tag: 'Hiệu chỉnh chệch', note: 'Hiệu chỉnh độ chệch trong R' },
-  { label: 'matrixB', tag: 'Bootstrap đa nhóm', note: 'Đánh giá Bootstrap cho so sánh nhóm' },
-  { label: 'PLSpredict', tag: 'Đánh giá dự báo', note: 'Đánh giá khả năng dự báo của mô hình' },
-  { label: 'IPMA', tag: 'Importance-Performance', note: 'Phân tích tầm quan trọng - hiệu suất' },
-  { label: 'HTMT', tag: 'Kiểm định phân biệt', note: 'Heterotrait-Monotrait cho discriminant validity' },
-  { label: 'G*Power', tag: 'Phân tích công suất', note: 'Tính cỡ mẫu cho PLS-SEM' },
+  { label: 'SmartPLS 4',   tag: 'Phần mềm chuẩn PLS',      note: 'Giao diện chuẩn ngành — tiêu chuẩn thực hành' },
+  { label: 'semPLS',        tag: 'PLS-SEM trong R',          note: 'Triển khai PLS-SEM bằng R' },
+  { label: 'plsdebias',     tag: 'Hiệu chỉnh chệch',         note: 'Hiệu chỉnh độ chệch trong R' },
+  { label: 'matrixB',       tag: 'Bootstrap đa nhóm',         note: 'Đánh giá Bootstrap cho so sánh nhóm' },
+  { label: 'PLSpredict',   tag: 'Đánh giá dự báo',           note: 'Đánh giá khả năng dự báo của mô hình' },
+  { label: 'IPMA',          tag: 'Importance-Performance',    note: 'Phân tích tầm quan trọng - hiệu suất' },
+  { label: 'HTMT',          tag: 'Kiểm định phân biệt',       note: 'Heterotrait-Monotrait cho discriminant validity' },
+  { label: 'G*Power',       tag: 'Phân tích công suất',      note: 'Tính cỡ mẫu cho PLS-SEM' },
 ];
 
 const plsMistakes = [
-  { label: 'Dùng PLS-SEM cho mục tiêu giải thích thay vì CB-SEM', severity: 'Tới hạn' },
-  { label: 'Không đánh giá mô hình đo lường trước mô hình cấu trúc', severity: 'Nghiêm trọng' },
-  { label: 'Báo cáo chỉ R² mà không đánh giá convergent validity', severity: 'Nghiêm trọng' },
-  { label: 'Đánh giá reflective bằng VIF (thay vì HTMT)', severity: 'Nghiêm trọng' },
-  { label: 'Formative constructs không kiểm tra VIF và trọng số', severity: 'Tới hạn' },
-  { label: 'Mẫu quá nhỏ (n < 10× số chỉ tiêu của khối lớn nhất)', severity: 'Tới hạn' },
-  { label: 'Bootstrap < 5000 mà không báo cáo', severity: 'Trung bình' },
-  { label: 'Bỏ qua đánh giá dự báo (PLSpredict / Q²)', severity: 'Nghiêm trọng' },
+  { text: 'Dùng PLS-SEM cho mục tiêu giải thích thay vì CB-SEM',                sev: 'Tới hạn',     dot: 'red' },
+  { text: 'Không đánh giá mô hình đo lường trước mô hình cấu trúc',            sev: 'Nghiêm trọng', dot: 'red' },
+  { text: 'Formative constructs không kiểm tra VIF và trọng số',                 sev: 'Tới hạn',     dot: 'red' },
+  { text: 'Mẫu quá nhỏ (n < 10× số chỉ tiêu của khối lớn nhất)',               sev: 'Tới hạn',     dot: 'red' },
+  { text: 'Bootstrap < 5000 mà không báo cáo',                                   sev: 'Trung bình',   dot: 'yellow' },
+  { text: 'Bỏ qua đánh giá dự báo (PLSpredict / Q²)',                           sev: 'Nghiêm trọng', dot: 'red' },
 ];
+
+const levelBadgeCls = (level: string) => {
+  if (level === 'Cơ bản')    return 'text-green-400 bg-green-500/10 border-green-500/20';
+  if (level === 'Trung cấp') return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
+  return 'text-red-400 bg-red-500/10 border-red-500/20';
+};
+
+const sevBadgeCls = (sev: string, dot: string) => {
+  if (dot === 'red')   return 'text-red-400 bg-red-500/10 border-red-500/20';
+  return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
+};
 ---
 
 <Layout>
-  <!-- ═══════════════════════════════════════════
-       HERO
-  ════════════════════════════════════════════ -->
-  <section class="text-center max-w-4xl mx-auto mb-10">
-    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/5 text-orange-300 text-xs font-mono font-medium mb-5">
-      <span class="relative flex h-1.5 w-1.5">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-orange-500"></span>
-      </span>
-      v2.0 — 11 danh mục · 46+ lệnh · 12 so sánh
-    </div>
+  <!-- ═══════════════════════════════════════════════════════════════
+       HERO — Tabbed hero: Stata / R / SPSS / PLS-SEM + right summary card
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="flex min-h-screen items-center px-4 py-8 sm:px-6 lg:px-10">
+    <div class="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-feature lg:items-center">
 
-    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] tracking-tight mb-5 leading-[1.1]">
-      <span class="text-white">Cổng tính toán</span><br />
-      <span class="bg-gradient-to-r from-orange-400 via-amber-400 to-orange-400 bg-clip-text text-transparent">Thống kê & Kinh tế lượng</span><br />
-      <span class="text-white">Thống nhất</span>
-    </h1>
+      <!-- ── Left: Hero + Tab Switcher ── -->
+      <div class="space-y-5">
 
-    <p class="text-sm sm:text-base text-[#a1a1a1] max-w-2xl mx-auto leading-relaxed mb-7">
-      Hướng dẫn thực hành tập trung vào <span class="text-white font-medium">Stata</span>,
-      <span class="text-white font-medium">R</span>,
-      <span class="text-white font-medium">SPSS</span> và
-      <span class="text-white font-medium">PLS-SEM</span>.
-      Nên dùng lệnh nào? Hiểu sự đánh đổi — điều hướng tự tin.
-    </p>
-
-    <div class="flex flex-wrap items-center justify-center gap-3">
-      <a href="#explore"
-        class="group inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-sm font-semibold shadow-[0_0_24px_rgba(249,115,22,0.35)] hover:shadow-[0_0_36px_rgba(249,115,22,0.5)] transition-all duration-300">
-        Khám phá ngay
-        <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-        </svg>
-      </a>
-      <a href="https://github.com"
-        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl border border-[#2a2a2a] bg-[#111111] hover:bg-[#1a1a1a] text-[#a1a1a1] hover:text-white text-sm font-medium transition-all duration-200">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        GitHub
-      </a>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════
-       TABS
-  ════════════════════════════════════════════ -->
-  <section class="max-w-5xl mx-auto mb-10">
-    <div id="explore"
-      class="relative flex flex-wrap items-center justify-center gap-1 sm:gap-2 p-1.5 rounded-xl border border-[#2a2a2a] bg-[#111111]/60 backdrop-blur-xl shadow-inner"
-      style="scroll-margin-top: 5rem;">
-      <div id="tab-indicator"
-        class="absolute top-1.5 bottom-1.5 rounded-lg transition-all duration-300 ease-out"
-        style="width: calc(25% - 6px); left: 3px; background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.25); box-shadow: 0 0 20px rgba(249,115,22,0.15);">
-      </div>
-      {tabs.map((tab, i) => (
-        <button data-tab={tab.id} data-index={i}
-          class="relative z-10 flex-1 min-w-[100px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap cursor-pointer"
-          aria-selected={i === 0 ? 'true' : 'false'}>
-          <span class={`tab-icon-${tab.id} inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold font-mono transition-all duration-200 ${i === 0 ? `bg-${tab.color}-500/20 text-${tab.color}-300` : 'bg-white/5 text-[#666]'}`}>
-            {tab.icon}
+        <!-- Bordered pill badge -->
+        <span class="inline-flex items-center gap-1.5 rounded-md border border-orange-500/20 bg-orange-500/10 px-4 py-1.5 text-xs font-medium text-orange-400 shadow-xs w-fit">
+          <span class="relative flex h-1.5 w-1.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-orange-500"></span>
           </span>
-          <span class={`tab-label-${tab.id} ${i === 0 ? 'text-white' : 'text-[#a1a1a1]'}`}>{tab.label}</span>
-        </button>
-      ))}
-    </div>
-    <div class="mt-3 text-center">
-      <p id="tab-description" class="text-xs text-[#666]">{tabs[0].desc}</p>
+          Public Beta · {sourceCategories.length} Danh mục · {totalCmdCount}+ Lệnh
+        </span>
+
+        <!-- Bold heading -->
+        <h1 class="text-balance text-3xl font-black tracking-tight sm:text-5xl leading-[1.1]">
+          Cổng tính toán<br/>
+          <span class="bg-gradient-to-r from-orange-400 via-amber-300 to-orange-400 bg-clip-text text-transparent">
+            Thống kê & Kinh tế lượng
+          </span><br/>
+          Thống nhất
+        </h1>
+
+        <!-- Sub text -->
+        <p class="max-w-2xl text-base text-[#a1a1a1] sm:text-lg leading-relaxed">
+          Hướng dẫn thực hành tập trung vào
+          <span class="text-white font-medium">Stata</span>,
+          <span class="text-white font-medium">R</span>,
+          <span class="text-white font-medium">SPSS</span> và
+          <span class="text-white font-medium">PLS-SEM</span>.
+          Nên dùng lệnh nào? Hiểu sự đánh đổi — điều hướng tự tin.
+        </p>
+
+        <!-- ── SOFTWARE TAB SWITCHER ── -->
+        <div class="space-y-3">
+          <!-- Tab bar -->
+          <div
+            id="explore"
+            class="relative inline-flex items-center rounded-xl border border-[#2a2a2a] bg-[#111111] p-1 gap-0.5 shadow-sm"
+            style="scroll-margin-top:4rem;">
+            <!-- Sliding indicator -->
+            <div id="tab-indicator"
+              class="absolute top-1 bottom-1 rounded-lg transition-all duration-300 ease-out"
+              style="width: calc(25% - 3px); left: 3px; background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.3); box-shadow: 0 0 16px rgba(249,115,22,0.2);">
+            </div>
+            {tabs.map((tab, i) => (
+              <button
+                data-tab={tab.id}
+                data-index={i}
+                class="relative z-10 flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap cursor-pointer min-w-[72px] justify-center"
+                aria-selected={i === 0 ? 'true' : 'false'}>
+                <span
+                  class={`tab-icon-${tab.id} inline-flex h-5 w-5 items-center justify-center rounded text-[10px] font-bold font-mono transition-all duration-200 ${
+                    i === 0
+                      ? tab.color === 'orange' ? 'bg-orange-500/20 text-orange-300'
+                      : tab.color === 'amber'  ? 'bg-amber-500/20 text-amber-300'
+                      : tab.color === 'yellow'? 'bg-yellow-500/20 text-yellow-300'
+                      : 'bg-lime-500/20 text-lime-300'
+                      : 'bg-white/5 text-[#666]'
+                  }`}
+                >
+                  {tab.icon}
+                </span>
+                <span class={`tab-label-${tab.id} ${i === 0 ? 'text-white' : 'text-[#888]'}`}>
+                  {tab.label}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <!-- Tab description -->
+          <p id="tab-description" class="text-sm text-[#888]">
+            {tabs[0].desc}
+          </p>
+
+          <!-- CTA row -->
+          <div class="flex flex-wrap items-center gap-3">
+            <a href="#panel-stata"
+              class="group inline-flex items-center gap-2 rounded-md bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-400 transition-all duration-200">
+              Khám phá ngay
+              <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 rounded-md border border-[#2a2a2a] bg-[#111111] px-4 py-2.5 text-sm font-medium text-[#888] hover:text-white hover:border-[#3a3a3a] transition-all duration-200">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              GitHub
+            </a>
+          </div>
+
+          <!-- Language toggle -->
+          <div class="inline-flex items-center gap-1 rounded-xl border border-[#2a2a2a] bg-[#111111] p-1 shadow-xs">
+            <button id="lang-en"
+              class="flex items-center gap-1.5 rounded-md bg-orange-500 text-white px-3 py-1.5 text-sm font-medium min-w-24 justify-center cursor-pointer transition-all duration-200 hover:bg-orange-400">
+              English
+            </button>
+            <button id="lang-vi"
+              class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-[#666] min-w-24 justify-center cursor-pointer transition-all duration-200 hover:bg-[#1a1a1a] hover:text-[#a1a1a1]">
+              Tiếng Việt
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Right: Dynamic summary card per tab ── -->
+      <div class="space-y-3">
+        <!-- Stata card (default) -->
+        <div id="card-stata" class="tab-card rounded-2xl border border-[#2a2a2a] bg-[#111111] p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <p class="text-xs font-semibold uppercase tracking-widest text-orange-400">Stata</p>
+            <span class="rounded border border-orange-500/20 bg-orange-500/10 px-2 py-0.5 text-[10px] font-mono text-orange-300">{sourceCategories.length} Danh mục</span>
+          </div>
+          <p class="text-3xl font-black tracking-tight text-white leading-tight">
+            {totalCmdCount}+ Lệnh chuẩn
+          </p>
+          <p class="mt-2 text-sm text-[#a1a1a1]">
+            Từ OLS cơ bản đến <span class="text-white font-medium">Double ML</span>
+          </p>
+          <div class="mt-4 space-y-1.5">
+            {['reg · robust · estout', 'csdid · rdrobust · ddml', 'ivreg2 · reghdfe · honestdid'].map((s) => (
+              <div class="flex items-center gap-2 text-xs text-[#666]">
+                <span class="h-px flex-1 bg-[#2a2a2a]"></span>
+                <span class="font-mono">{s}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- R card -->
+        <div id="card-r" class="tab-card hidden rounded-2xl border border-[#2a2a2a] bg-[#111111] p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <p class="text-xs font-semibold uppercase tracking-widest text-amber-400">R</p>
+            <span class="rounded border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-mono text-amber-300">Tidyverse Ecosystem</span>
+          </div>
+          <p class="text-3xl font-black tracking-tight text-white leading-tight">
+            10 Gói tốt nhất
+          </p>
+          <p class="mt-2 text-sm text-[#a1a1a1]">
+            Từ dplyr đến <span class="text-white font-medium">DoubleML</span>
+          </p>
+          <div class="mt-4 space-y-1.5">
+            {['dplyr · tidyr · ggplot2', 'fixest · plm · glmnet', 'MatchIt · DeclareDesign · gt'].map((s) => (
+              <div class="flex items-center gap-2 text-xs text-[#666]">
+                <span class="h-px flex-1 bg-[#2a2a2a]"></span>
+                <span class="font-mono">{s}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- SPSS card -->
+        <div id="card-spss" class="tab-card hidden rounded-2xl border border-[#2a2a2a] bg-[#111111] p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <p class="text-xs font-semibold uppercase tracking-widest text-yellow-400">SPSS</p>
+            <span class="rounded border border-yellow-500/20 bg-yellow-500/10 px-2 py-0.5 text-[10px] font-mono text-yellow-300">10 Thủ tục Syntax</span>
+          </div>
+          <p class="text-3xl font-black tracking-tight text-white leading-tight">
+            Syntax chuẩn ngành
+          </p>
+          <p class="mt-2 text-sm text-[#a1a1a1]">
+            Từ REGRESSION đến <span class="text-white font-medium">GENLINMIXED</span>
+          </p>
+          <div class="mt-4 space-y-1.5">
+            {['REGRESSION · LOGISTIC REGR', 'MIXED · GENLINMIXED', 'FACTOR · CLUSTER · ROC'].map((s) => (
+              <div class="flex items-center gap-2 text-xs text-[#666]">
+                <span class="h-px flex-1 bg-[#2a2a2a]"></span>
+                <span class="font-mono">{s}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- PLS-SEM card -->
+        <div id="card-pls" class="tab-card hidden rounded-2xl border border-[#2a2a2a] bg-[#111111] p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <p class="text-xs font-semibold uppercase tracking-widest text-lime-400">PLS-SEM</p>
+            <span class="rounded border border-lime-500/20 bg-lime-500/10 px-2 py-0.5 text-[10px] font-mono text-lime-300">8 Công cụ tiêu chuẩn</span>
+          </div>
+          <p class="text-3xl font-black tracking-tight text-white leading-tight">
+            Tiêu chuẩn ngành
+          </p>
+          <p class="mt-2 text-sm text-[#a1a1a1]">
+            SmartPLS 4 · <span class="text-white font-medium">PLSpredict</span> · HTMT
+          </p>
+          <div class="mt-4 space-y-1.5">
+            {['SmartPLS 4 · semPLS', 'PLSpredict · IPMA · HTMT', 'G*Power · plsdebias'].map((s) => (
+              <div class="flex items-center gap-2 text-xs text-[#666]">
+                <span class="h-px flex-1 bg-[#2a2a2a]"></span>
+                <span class="font-mono">{s}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- View all CTA -->
+        <a href="#panel-stata"
+          class="flex items-center justify-center gap-2 rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-3 text-xs text-[#888] hover:text-orange-400 hover:border-orange-500/30 transition-all duration-200">
+          Xem tất cả nội dung
+          <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </a>
+      </div>
+
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════
-       TAB PANELS
-  ════════════════════════════════════════════ -->
-  <div id="tab-panels" class="max-w-5xl mx-auto">
+  <!-- ═══════════════════════════════════════════════════════════════
+       LEARNING PATHS — llmgate "Choose Your Path" style
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="px-4 py-12 sm:px-6 lg:px-10">
+    <div class="mx-auto max-w-5xl space-y-6">
+      <div class="space-y-2 text-center">
+        <h2 class="text-2xl font-bold sm:text-3xl tracking-tight">Lộ trình học tập</h2>
+        <p class="text-[#a1a1a1]">Từ người mới đến nghiên cứu chuyên sâu</p>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <!-- Beginner Path -->
+        <div class="rounded-2xl border border-[#2a2a2a] bg-[#111111] p-5 shadow-sm">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-base">🎓</span>
+            <h3 class="text-base font-semibold text-white">Người mới bắt đầu</h3>
+          </div>
+          <div class="space-y-1">
+            {stataPathBeginner.map((step, i) => (
+              <div class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/[0.03] transition-colors">
+                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#333] bg-[#0a0a0a] text-[10px] font-mono font-bold text-[#555]">
+                  {i + 1}
+                </span>
+                <span class="text-sm text-[#a1a1a1]">{step}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <!-- Research Path -->
+        <div class="rounded-2xl border border-[#2a2a2a] bg-[#111111] p-5 shadow-sm">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-base">🔬</span>
+            <h3 class="text-base font-semibold text-white">Nghiên cứu chuyên sâu</h3>
+          </div>
+          <div class="space-y-1">
+            {stataPathResearch.map((step) => (
+              <div class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/[0.03] transition-colors">
+                <svg class="h-3 w-3 text-[#444] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                <span class="text-sm text-[#a1a1a1]">{step}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- ─── STATA ─── -->
+  <!-- ═══════════════════════════════════════════════════════════════
+       TAB PANELS
+  ═══════════════════════════════════════════════════════════════ -->
+  <div id="tab-panels">
+
+    <!-- ─── STATA PANEL ─── -->
     <div id="panel-stata" class="tab-panel" data-panel="stata">
 
-      <!-- Quick Start Paths -->
-      <section class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-semibold text-[#666] uppercase tracking-widest font-['Space_Grotesk']">Bắt đầu tại đây</h2>
-          <span class="text-xs text-[#666] hover:text-orange-400 cursor-pointer transition-colors">Dùng cây quyết định →</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Beginner Path -->
-          <div class="rounded-2xl border border-[#2a2a2a] bg-[#111111]/60 backdrop-blur-xl p-5">
-            <div class="flex items-center gap-2 mb-4">
-              <span class="text-base">🎓</span>
-              <h3 class="text-sm font-semibold text-white">Lộ trình người mới</h3>
-            </div>
-            <div class="space-y-1.5">
-              {stataPathBeginner.map((item) => (
-                <div class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/5 transition-colors cursor-default group">
-                  <span class="flex-shrink-0 w-5 h-5 rounded-full border border-[#333] bg-[#0a0a0a] flex items-center justify-center text-[10px] font-mono font-bold text-[#666] group-hover:border-orange-500/40 group-hover:text-orange-400 transition-colors">
-                    {item.step}
-                  </span>
-                  <span class="text-xs text-[#a1a1a1] group-hover:text-white transition-colors">{item.label}</span>
-                </div>
-              ))}
-            </div>
+      <!-- Categories grid (llmgate card style) -->
+      <section class="px-4 py-10 sm:px-6 lg:px-10">
+        <div class="mx-auto max-w-5xl space-y-5">
+          <div class="space-y-2 text-center">
+            <h2 class="text-2xl font-bold sm:text-3xl tracking-tight">{sourceCategories.length} Danh mục kinh tế lượng</h2>
+            <p class="text-[#a1a1a1]">Mỗi danh mục là một lộ trình từ cơ bản đến nâng cao</p>
           </div>
-          <!-- Research Path -->
-          <div class="rounded-2xl border border-[#2a2a2a] bg-[#111111]/60 backdrop-blur-xl p-5">
-            <div class="flex items-center gap-2 mb-4">
-              <span class="text-base">🔬</span>
-              <h3 class="text-sm font-semibold text-white">Lộ trình nghiên cứu</h3>
-            </div>
-            <div class="space-y-1.5">
-              {stataPathResearch.map((item) => (
-                <div class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/5 transition-colors cursor-default group">
-                  <svg class="h-3 w-3 text-[#444] group-hover:text-orange-400 flex-shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"/>
-                  </svg>
-                  <span class="text-xs text-[#a1a1a1] group-hover:text-white transition-colors">{item.label}</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {stataCategories.map((cat) => (
+              <div class="group relative flex flex-col rounded-xl border border-[#2a2a2a] bg-[#111111]/80 hover:bg-[#161616] p-4 cursor-default transition-all duration-200 hover:-translate-y-0.5 hover:border-orange-500/30 overflow-hidden">
+                <!-- subtle bg glow on hover -->
+                <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-orange-500/[0.03] to-transparent pointer-events-none"></div>
+                <div class="flex items-start justify-between mb-2">
+                  <span class="text-2xl leading-none">{cat.icon}</span>
+                  <span class={`rounded border px-2 py-0.5 text-[10px] font-mono font-medium ${levelBadgeCls(cat.level)}`}>{cat.level}</span>
                 </div>
-              ))}
-            </div>
+                <h3 class="text-sm font-semibold text-white mb-1 leading-tight relative">{cat.name}</h3>
+                <!-- Overview on hover -->
+                <p class="text-xs text-[#555] flex-1 mb-2 relative line-clamp-2 group-hover:line-clamp-none transition-all duration-200">{cat.overview}</p>
+                <!-- Command chips -->
+                <div class="flex flex-wrap gap-1 mb-2">
+                  {cat.detail.split(' · ').slice(0, 4).map((cmd: string) => (
+                    <span class="rounded bg-orange-500/10 border border-orange-500/20 text-[10px] font-mono text-orange-300 px-1.5 py-0.5">{cmd}</span>
+                  ))}
+                </div>
+                <!-- Common mistakes tooltip on hover -->
+                {cat.commonMistakes.length > 0 && (
+                  <div class="hidden group-hover:block absolute left-0 right-0 bottom-full z-10 bg-[#161616] border border-orange-500/30 rounded-xl p-4 shadow-xl mb-1 max-h-60 overflow-y-auto">
+                    <p class="text-[10px] font-semibold text-orange-400 uppercase tracking-widest mb-2">⚠ Sai lầm phổ biến</p>
+                    {cat.commonMistakes.slice(0, 3).map((mistake: string) => (
+                      <p class="text-[11px] text-[#a1a1a1] mb-1.5 leading-relaxed">• {mistake}</p>
+                    ))}
+                    {cat.upgradePath && (
+                      <p class="text-[10px] text-[#555] mt-2 border-t border-[#2a2a2a] pt-2">↑ {cat.upgradePath}</p>
+                    )}
+                  </div>
+                )}
+                <div class="border-t border-[#2a2a2a] pt-2.5 relative">
+                  <div class="text-[10px] font-mono text-[#444]">{cat.count}</div>
+                </div>
+                <!-- Bottom accent line -->
+                <div class="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-orange-500/0 to-transparent group-hover:via-orange-500/40 transition-all duration-300"></div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <!-- Category Cards Grid -->
-      <section class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-semibold text-[#666] uppercase tracking-widest font-['Space_Grotesk']">11 Danh mục kinh tế lượng</h2>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {stataCategories.map((cat) => (
-            <div class="group relative flex flex-col rounded-xl border border-[#2a2a2a] bg-[#111111]/60 hover:bg-[#161616]/80 backdrop-blur-xl p-4 cursor-pointer transition-all duration-200 hover:border-orange-500/30 hover:shadow-[0_0_30px_rgba(249,115,22,0.08)] hover:-translate-y-0.5">
-              <div class="flex items-start justify-between mb-3">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg border border-[#2a2a2a] bg-[#0a0a0a] text-[#666] group-hover:text-orange-400 group-hover:border-orange-500/30 group-hover:bg-orange-500/5 transition-all duration-200">
-                  <div class="h-4 w-4" set:html={cat.icon} />
-                </div>
-                <div class="flex items-center gap-2 flex-wrap justify-end">
-                  <span class={`px-2 py-0.5 rounded text-[10px] font-mono font-medium border ${cat.levelColor}`}>{cat.level}</span>
-                </div>
-              </div>
-              <h3 class="text-sm font-semibold text-white mb-1 leading-tight">{cat.name}</h3>
-              <p class="text-xs text-[#666] leading-relaxed flex-1 mb-3">{cat.desc}</p>
-              <div class="border-t border-[#2a2a2a] pt-2.5">
-                <div class="text-[10px] font-mono text-[#555]">{cat.count} · {cat.detail}</div>
-              </div>
-              <div class="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-orange-500/0 to-transparent group-hover:via-orange-500/40 transition-all duration-300"></div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <!-- Best Packages Table -->
-      <section class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-semibold text-[#666] uppercase tracking-widest font-['Space_Grotesk']">Gói tốt nhất theo trường hợp sử dụng</h2>
-        </div>
-        <div class="rounded-xl border border-[#2a2a2a] bg-[#111111]/60 backdrop-blur-xl overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-xs">
-              <thead>
-                <tr class="border-b border-[#2a2a2a]">
-                  <th class="text-left px-4 py-3 text-[#555] font-semibold uppercase tracking-wider">Trường hợp</th>
-                  <th class="text-left px-4 py-3 text-[#555] font-semibold uppercase tracking-wider">Lệnh / Gói</th>
-                  <th class="text-left px-4 py-3 text-[#555] font-semibold uppercase tracking-wider hidden sm:table-cell">Cấp độ</th>
-                  <th class="text-left px-4 py-3 text-[#555] font-semibold uppercase tracking-wider hidden md:table-cell">Ghi chú</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stataBestPackages.map((pkg, i) => (
-                  <tr class={`border-b border-[#1e1e1e] ${i % 2 === 0 ? '' : 'bg-white/[0.01]'}`}>
-                    <td class="px-4 py-3 text-[#a1a1a1]">{pkg.use}</td>
-                    <td class="px-4 py-3">
-                      <code class="px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-300 border border-orange-500/20 text-[11px] font-mono font-medium">
-                        {pkg.cmd}
-                      </code>
-                    </td>
-                    <td class="px-4 py-3 hidden sm:table-cell">
-                      <span class={`px-2 py-0.5 rounded text-[10px] font-mono font-medium border ${
-                        pkg.level === 'Cơ bản' ? 'bg-green-500/10 text-green-300 border-green-500/20' :
-                        pkg.level === 'Trung cấp' ? 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20' :
-                        'bg-red-500/10 text-red-300 border-red-500/20'
-                      }`}>{pkg.level}</span>
-                    </td>
-                    <td class="px-4 py-3 text-[#555] hidden md:table-cell">{pkg.note}</td>
+      <!-- Best Packages Table (llmgate pricing table style) -->
+      <section class="px-4 pb-10 sm:px-6 lg:px-10">
+        <div class="mx-auto max-w-5xl space-y-4">
+          <div class="space-y-2">
+            <h2 class="text-xl font-bold tracking-tight">Gói tốt nhất theo trường hợp sử dụng</h2>
+            <p class="text-[#a1a1a1] text-sm">Chuẩn thực hành hiện nay — dùng làm mặc định cho công bố khoa học</p>
+          </div>
+          <div class="overflow-hidden rounded-2xl border border-[#2a2a2a] bg-[#111111] shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[600px] text-sm">
+                <thead class="bg-[#0a0a0a] text-xs uppercase tracking-wider text-[#555]">
+                  <tr>
+                    <th class="text-left px-4 py-3 font-semibold">Trường hợp</th>
+                    <th class="text-left px-4 py-3 font-semibold">Lệnh / Gói</th>
+                    <th class="text-left px-4 py-3 font-semibold hidden sm:table-cell">Cấp độ</th>
+                    <th class="text-left px-4 py-3 font-semibold hidden md:table-cell">Ghi chú</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {stataBestPackages.map((pkg, i) => (
+                    <tr class={`border-t border-[#1a1a1a] align-top ${i % 2 === 0 ? '' : 'bg-white/[0.01]'}`}>
+                      <td class="px-4 py-3 text-[#a1a1a1]">{pkg.use}</td>
+                      <td class="px-4 py-3">
+                        <code class="rounded bg-orange-500/10 text-orange-300 border border-orange-500/20 px-1.5 py-0.5 text-[11px] font-mono font-medium">
+                          {pkg.cmd}
+                        </code>
+                      </td>
+                      <td class="px-4 py-3 hidden sm:table-cell">
+                        <span class={`rounded border px-2 py-0.5 text-[10px] font-mono font-medium ${levelBadgeCls(pkg.level)}`}>{pkg.level}</span>
+                      </td>
+                      <td class="px-4 py-3 text-[#555] text-xs hidden md:table-cell">{pkg.note}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Comparisons Pills -->
-      <section class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-semibold text-[#666] uppercase tracking-widest font-['Space_Grotesk']">So sánh quan trọng nhất</h2>
-          <span class="text-xs text-[#666] hover:text-orange-400 cursor-pointer transition-colors">Tất cả so sánh →</span>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          {stataComparisons.map((comp) => (
-            <button class="px-3 py-1.5 rounded-lg border border-[#2a2a2a] bg-[#111111]/60 text-xs text-[#a1a1a1] hover:text-orange-400 hover:border-orange-500/30 hover:bg-orange-500/5 transition-all duration-200 font-mono">
-              {comp}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <!-- Critical Evaluation -->
-      <section class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-semibold text-[#666] uppercase tracking-widest font-['Space_Grotesk']">Đánh giá phê phán</h2>
-          <span class="text-xs text-[#666] hover:text-orange-400 cursor-pointer transition-colors">Sai lầm phổ biến →</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {stataWarnings.map((w) => (
-            <div class={`rounded-xl border px-4 py-3 ${
-              w.type === 'danger'  ? 'border-red-500/20 bg-red-500/5' :
-              w.type === 'warning' ? 'border-yellow-500/20 bg-yellow-500/5' :
-              'border-green-500/20 bg-green-500/5'
-            }`}>
-              <div class={`text-xs font-semibold mb-1.5 ${
-                w.type === 'danger'  ? 'text-red-400' :
-                w.type === 'warning' ? 'text-yellow-400' :
-                'text-green-400'
-              }`}>{w.title}</div>
-              <p class="text-xs text-[#a1a1a1] leading-relaxed">{w.body}</p>
+      <!-- Comparisons + Warnings -->
+      <section class="px-4 pb-14 sm:px-6 lg:px-10">
+        <div class="mx-auto max-w-5xl grid gap-6 lg:grid-cols-2">
+          <div class="space-y-3">
+            <h2 class="text-base font-semibold tracking-tight">So sánh quan trọng nhất</h2>
+            <div class="flex flex-wrap gap-2">
+              {stataComparisons.map((comp) => (
+                <button class="rounded-lg border border-[#2a2a2a] bg-[#111111]/60 px-3 py-1.5 text-xs text-[#a1a1a1] hover:text-orange-400 hover:border-orange-500/30 hover:bg-orange-500/5 transition-all duration-200 font-mono cursor-pointer">
+                  {comp}
+                </button>
+              ))}
             </div>
-          ))}
+          </div>
+          <div class="space-y-3">
+            <h2 class="text-base font-semibold tracking-tight">Đánh giá phê phán</h2>
+            <div class="space-y-2">
+              <div class="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3">
+                <div class="text-xs font-semibold text-red-400 mb-1">✗ TWFE cho DID theo giai đoạn</div>
+                <p class="text-xs text-[#a1a1a1]">Dùng i.treated##i.time bị chệch khi tác động không đồng nhất. Luôn dùng csdid.</p>
+              </div>
+              <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/5 px-4 py-3">
+                <div class="text-xs font-semibold text-yellow-400 mb-1">⚠ Dùng thận trọng</div>
+                <p class="text-xs text-[#a1a1a1]">psmatch2, xtabond2, synth — mạnh nhưng dễ dùng sai. Hiểu chẩn đoán trước khi áp dụng.</p>
+              </div>
+              <div class="rounded-xl border border-green-500/20 bg-green-500/5 px-4 py-3">
+                <div class="text-xs font-semibold text-green-400 mb-1">✓ Tiêu chuẩn vàng</div>
+                <p class="text-xs text-[#a1a1a1]">ivreg2, rdrobust, csdid, estout, binscatter2, reghdfe — dùng cho nghiên cứu chuyên sâu.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
 
-    <!-- ─── R ─── -->
+    <!-- ─── R PANEL ─── -->
     <div id="panel-r" class="tab-panel hidden" data-panel="r">
-      <section class="mb-8">
-        <div class="flex items-center gap-2 mb-1">
-          <div class="text-base">📦</div>
-          <h2 class="text-base font-semibold text-white">Gói lệnh tốt nhất trong R</h2>
-        </div>
-        <p class="text-xs text-[#666] mb-5">Hệ sinh thái tidyverse là nền tảng — các gói chuyên biệt cho từng phương pháp.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-          {rPackages.map((pkg) => (
-            <div class="group flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/60 hover:bg-[#161616]/80 px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 cursor-default">
-              <svg class="h-3 w-3 text-[#444] group-hover:text-amber-400 flex-shrink-0 mt-0.5 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-              <div class="min-w-0 flex-1">
-                <div class="text-sm text-[#e0e0e0] group-hover:text-white font-medium leading-tight mb-1 transition-colors">{pkg.label}</div>
-                <div class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 mb-1 inline-block">{pkg.tag}</div>
-                <div class="text-[11px] text-[#555] leading-relaxed">{pkg.note}</div>
+      <section class="px-4 py-10 sm:px-6 lg:px-10">
+        <div class="mx-auto max-w-5xl space-y-6">
+          <div class="space-y-2 text-center">
+            <div class="text-2xl font-bold tracking-tight">📦 Gói lệnh tốt nhất trong R</div>
+            <p class="text-[#a1a1a1]">Hệ sinh thái tidyverse là nền tảng — các gói chuyên biệt cho từng phương pháp.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {rPackages.map((pkg) => (
+              <div class="group flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/60 hover:bg-[#161616] px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 cursor-default overflow-hidden relative">
+                <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-amber-500/[0.03] to-transparent pointer-events-none"></div>
+                <svg class="h-3 w-3 text-[#444] group-hover:text-amber-400 shrink-0 mt-0.5 transition-colors relative" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                <div class="min-w-0 flex-1 relative">
+                  <div class="text-sm font-medium text-[#e0e0e0] group-hover:text-white mb-1 transition-colors">{pkg.label}</div>
+                  <div class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 mb-1 inline-block">{pkg.tag}</div>
+                  <div class="text-[11px] text-[#555]">{pkg.note}</div>
+                </div>
               </div>
+            ))}
+          </div>
+          <div class="space-y-3 pt-4">
+            <div class="text-base font-semibold tracking-tight">⚠️ Sai lầm phổ biến trong R</div>
+            <div class="space-y-2">
+              {rMistakes.map((m) => (
+                <div class="flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/40 px-4 py-3 hover:border-[#333] transition-all">
+                  <span class={`shrink-0 h-1.5 w-1.5 rounded-full mt-1.5 ${m.dot === 'red' ? 'bg-red-500' : 'bg-yellow-400'}`}></span>
+                  <div class="flex-1 text-xs text-[#a1a1a1]">{m.text}</div>
+                  <span class={`shrink-0 text-[10px] font-mono px-2 py-0.5 rounded border ${sevBadgeCls(m.sev, m.dot)}`}>{m.sev}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
-
-      <section class="mb-8">
-        <div class="flex items-center gap-2 mb-4">
-          <div class="text-base">⚠️</div>
-          <h2 class="text-base font-semibold text-white">Sai lầm phổ biến trong R</h2>
-        </div>
-        <div class="space-y-2">
-          {rMistakes.map((m) => (
-            <div class="flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/40 px-4 py-3 hover:border-[#333] transition-all duration-200">
-              <span class={`flex-shrink-0 h-1.5 w-1.5 rounded-full mt-1.5 ${
-                m.severity === 'Nghiêm trọng' ? 'bg-red-500' :
-                m.severity === 'Trung bình' ? 'bg-yellow-400' :
-                'bg-blue-400'
-              }`}></span>
-              <div class="flex-1 min-w-0">
-                <div class="text-xs text-[#a1a1a1] leading-relaxed">{m.label}</div>
-              </div>
-              <span class={`flex-shrink-0 text-[10px] font-mono px-2 py-0.5 rounded border ${
-                m.severity === 'Nghiêm trọng' ? 'bg-red-500/10 text-red-300 border-red-500/20' :
-                m.severity === 'Trung bình' ? 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20' :
-                'bg-green-500/10 text-green-300 border-green-500/20'
-              }`}>{m.severity}</span>
-            </div>
-          ))}
+          </div>
         </div>
       </section>
     </div>
 
-    <!-- ─── SPSS ─── -->
+    <!-- ─── SPSS PANEL ─── -->
     <div id="panel-spss" class="tab-panel hidden" data-panel="spss">
-      <section class="mb-8">
-        <div class="flex items-center gap-2 mb-1">
-          <div class="text-base">📊</div>
-          <h2 class="text-base font-semibold text-white">Thủ tục tốt nhất trong SPSS</h2>
-        </div>
-        <p class="text-xs text-[#666] mb-5">SPSS Syntax chuẩn cho các phương pháp phổ biến trong nghiên cứu xã hội và kinh tế.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          {spssProcedures.map((proc) => (
-            <div class="group flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/60 hover:bg-[#161616]/80 px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 cursor-default">
-              <svg class="h-3 w-3 text-[#444] group-hover:text-yellow-400 flex-shrink-0 mt-0.5 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-              <div class="min-w-0 flex-1">
-                <div class="text-sm text-[#e0e0e0] group-hover:text-white font-mono font-medium leading-tight mb-1 transition-colors">{proc.label}</div>
-                <div class="text-[10px] font-mono px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 mb-1 inline-block">{proc.tag}</div>
-                <div class="text-[11px] text-[#555] leading-relaxed">{proc.note}</div>
+      <section class="px-4 py-10 sm:px-6 lg:px-10">
+        <div class="mx-auto max-w-5xl space-y-6">
+          <div class="space-y-2 text-center">
+            <div class="text-2xl font-bold tracking-tight">📊 Thủ tục tốt nhất trong SPSS</div>
+            <p class="text-[#a1a1a1]">SPSS Syntax chuẩn cho các phương pháp phổ biến trong nghiên cứu xã hội và kinh tế.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {spssProcedures.map((p) => (
+              <div class="group flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/60 hover:bg-[#161616] px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 cursor-default overflow-hidden relative">
+                <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-yellow-500/[0.03] to-transparent pointer-events-none"></div>
+                <svg class="h-3 w-3 text-[#444] group-hover:text-yellow-400 shrink-0 mt-0.5 transition-colors relative" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                <div class="min-w-0 flex-1 relative">
+                  <div class="text-sm font-medium font-mono text-[#e0e0e0] group-hover:text-white mb-1 transition-colors">{p.label}</div>
+                  <div class="text-[10px] font-mono px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 mb-1 inline-block">{p.tag}</div>
+                  <div class="text-[11px] text-[#555]">{p.note}</div>
+                </div>
               </div>
+            ))}
+          </div>
+          <div class="space-y-3 pt-4">
+            <div class="text-base font-semibold tracking-tight">⚠️ Sai lầm phổ biến trong SPSS</div>
+            <div class="space-y-2">
+              {spssMistakes.map((m) => (
+                <div class="flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/40 px-4 py-3 hover:border-[#333] transition-all">
+                  <span class={`shrink-0 h-1.5 w-1.5 rounded-full mt-1.5 ${m.dot === 'red' ? 'bg-red-500' : 'bg-yellow-400'}`}></span>
+                  <div class="flex-1 text-xs text-[#a1a1a1]">{m.text}</div>
+                  <span class={`shrink-0 text-[10px] font-mono px-2 py-0.5 rounded border ${sevBadgeCls(m.sev, m.dot)}`}>{m.sev}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
-
-      <section class="mb-8">
-        <div class="flex items-center gap-2 mb-4">
-          <div class="text-base">⚠️</div>
-          <h2 class="text-base font-semibold text-white">Sai lầm phổ biến trong SPSS</h2>
-        </div>
-        <div class="space-y-2">
-          {spssMistakes.map((m) => (
-            <div class="flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/40 px-4 py-3 hover:border-[#333] transition-all duration-200">
-              <span class={`flex-shrink-0 h-1.5 w-1.5 rounded-full mt-1.5 ${
-                m.severity === 'Nghiêm trọng' ? 'bg-red-500' :
-                'bg-yellow-400'
-              }`}></span>
-              <div class="flex-1 min-w-0">
-                <div class="text-xs text-[#a1a1a1] leading-relaxed">{m.label}</div>
-              </div>
-              <span class={`flex-shrink-0 text-[10px] font-mono px-2 py-0.5 rounded border ${
-                m.severity === 'Nghiêm trọng' ? 'bg-red-500/10 text-red-300 border-red-500/20' :
-                'bg-yellow-500/10 text-yellow-300 border-yellow-500/20'
-              }`}>{m.severity}</span>
-            </div>
-          ))}
+          </div>
         </div>
       </section>
     </div>
 
-    <!-- ─── PLS-SEM ─── -->
+    <!-- ─── PLS-SEM PANEL ─── -->
     <div id="panel-pls" class="tab-panel hidden" data-panel="pls">
-      <section class="mb-8">
-        <div class="flex items-center gap-2 mb-1">
-          <div class="text-base">🔬</div>
-          <h2 class="text-base font-semibold text-white">Phần mềm & Gói tốt nhất cho PLS-SEM</h2>
-        </div>
-        <p class="text-xs text-[#666] mb-5">Tiêu chuẩn ngành cho mô hình phương trình cấu trúc bán tham số (PLS-SEM).</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-          {plsSoftware.map((s) => (
-            <div class="group flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/60 hover:bg-[#161616]/80 px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 cursor-default">
-              <svg class="h-3 w-3 text-[#444] group-hover:text-lime-400 flex-shrink-0 mt-0.5 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-              <div class="min-w-0 flex-1">
-                <div class="text-sm text-[#e0e0e0] group-hover:text-white font-medium leading-tight mb-1 transition-colors">{s.label}</div>
-                <div class="text-[10px] font-mono px-2 py-0.5 rounded bg-lime-500/10 text-lime-300 border border-lime-500/20 mb-1 inline-block">{s.tag}</div>
-                <div class="text-[11px] text-[#555] leading-relaxed">{s.note}</div>
+      <section class="px-4 py-10 sm:px-6 lg:px-10">
+        <div class="mx-auto max-w-5xl space-y-6">
+          <div class="space-y-2 text-center">
+            <div class="text-2xl font-bold tracking-tight">🔬 Phần mềm & Gói tốt nhất cho PLS-SEM</div>
+            <p class="text-[#a1a1a1]">Tiêu chuẩn ngành cho mô hình phương trình cấu trúc bán tham số (PLS-SEM).</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {plsSoftware.map((s) => (
+              <div class="group flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/60 hover:bg-[#161616] px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 cursor-default overflow-hidden relative">
+                <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-lime-500/[0.03] to-transparent pointer-events-none"></div>
+                <svg class="h-3 w-3 text-[#444] group-hover:text-lime-400 shrink-0 mt-0.5 transition-colors relative" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                <div class="min-w-0 flex-1 relative">
+                  <div class="text-sm font-medium text-[#e0e0e0] group-hover:text-white mb-1 transition-colors">{s.label}</div>
+                  <div class="text-[10px] font-mono px-2 py-0.5 rounded bg-lime-500/10 text-lime-300 border border-lime-500/20 mb-1 inline-block">{s.tag}</div>
+                  <div class="text-[11px] text-[#555]">{s.note}</div>
+                </div>
               </div>
+            ))}
+          </div>
+          <div class="space-y-3 pt-4">
+            <div class="text-base font-semibold tracking-tight">⚠️ Sai lầm phổ biến trong PLS-SEM</div>
+            <div class="space-y-2">
+              {plsMistakes.map((m) => (
+                <div class="flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/40 px-4 py-3 hover:border-[#333] transition-all">
+                  <span class={`shrink-0 h-1.5 w-1.5 rounded-full mt-1.5 ${m.dot === 'red' ? 'bg-red-500' : 'bg-yellow-400'}`}></span>
+                  <div class="flex-1 text-xs text-[#a1a1a1]">{m.text}</div>
+                  <span class={`shrink-0 text-[10px] font-mono px-2 py-0.5 rounded border ${sevBadgeCls(m.sev, m.dot)}`}>{m.sev}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
-
-      <section class="mb-8">
-        <div class="flex items-center gap-2 mb-4">
-          <div class="text-base">⚠️</div>
-          <h2 class="text-base font-semibold text-white">Sai lầm phổ biến trong PLS-SEM</h2>
-        </div>
-        <div class="space-y-2">
-          {plsMistakes.map((m) => (
-            <div class="flex items-start gap-3 rounded-xl border border-[#2a2a2a] bg-[#111111]/40 px-4 py-3 hover:border-[#333] transition-all duration-200">
-              <span class={`flex-shrink-0 h-1.5 w-1.5 rounded-full mt-1.5 ${
-                m.severity === 'Tới hạn' ? 'bg-red-600' :
-                m.severity === 'Nghiêm trọng' ? 'bg-red-500' :
-                'bg-yellow-400'
-              }`}></span>
-              <div class="flex-1 min-w-0">
-                <div class="text-xs text-[#a1a1a1] leading-relaxed">{m.label}</div>
-              </div>
-              <span class={`flex-shrink-0 text-[10px] font-mono px-2 py-0.5 rounded border ${
-                m.severity === 'Tới hạn' ? 'bg-red-600/10 text-red-400 border-red-600/20' :
-                m.severity === 'Nghiêm trọng' ? 'bg-red-500/10 text-red-300 border-red-500/20' :
-                'bg-yellow-500/10 text-yellow-300 border-yellow-500/20'
-              }`}>{m.severity}</span>
-            </div>
-          ))}
+          </div>
         </div>
       </section>
     </div>
 
-  </div><!-- #tab-panels -->
+  </div><!-- /#tab-panels -->
 
-  <!-- Stats Bar -->
-  <section class="max-w-5xl mx-auto mt-4 mb-8">
-    <div class="flex flex-wrap items-center justify-center gap-8 sm:gap-16 py-8 border-t border-[#1a1a1a]">
-      {[
-        { value: '4', label: 'Nền tảng phần mềm' },
-        { value: '11', label: 'Danh mục Stata' },
-        { value: '46+', label: 'Lệnh & gói chuẩn' },
-        { value: '12', label: 'Trang so sánh' },
-      ].map((s) => (
-        <div class="text-center">
-          <div class="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">{s.value}</div>
-          <div class="text-[10px] text-[#555] mt-1 uppercase tracking-wider">{s.label}</div>
-        </div>
-      ))}
+  <!-- ═══════════════════════════════════════════════════════════════
+       CTA SECTION — llmgate "Start in minutes" style
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="px-4 py-16 sm:px-6 lg:px-10">
+    <div class="mx-auto max-w-3xl rounded-3xl border border-[#2a2a2a] bg-[#111111] p-8 sm:p-12 text-center shadow-sm">
+      <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Bắt đầu trong vài phút</h2>
+      <p class="mx-auto mt-4 max-w-2xl text-base text-[#a1a1a1] sm:text-lg">
+        Tạo tài khoản và bắt đầu học ngay hôm nay.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a href="#"
+          class="group inline-flex items-center gap-2 rounded-md bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-400 transition-all duration-200">
+          Khám phá miễn phí
+          <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+      <!-- Stats row -->
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-8 sm:gap-16 py-6 border-t border-[#2a2a2a]">
+        {[
+          { v: '4',      l: 'Nền tảng' },
+          { v: String(sourceCategories.length), l: 'Danh mục' },
+          { v: `${totalCmdCount}+`,    l: 'Lệnh chuẩn' },
+          { v: '12',     l: 'Trang so sánh' },
+        ].map((s) => (
+          <div class="text-center">
+            <div class="text-3xl sm:text-4xl font-black bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">{s.v}</div>
+            <div class="mt-1 text-[10px] uppercase tracking-widest text-[#555]">{s.l}</div>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BOTTOM CAROUSEL DOTS — llmgate exact style
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="fixed bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-md border border-[#2a2a2a] bg-[#0a0a0a]/90 px-3 py-2 shadow-sm backdrop-blur-sm z-20">
+    <button data-dot="0" class="h-2.5 w-2.5 rounded-full transition-colors bg-orange-400 cursor-pointer" aria-label="Trang 1"></button>
+    <button data-dot="1" class="h-2.5 w-2.5 rounded-full bg-[#555]/60 cursor-pointer hover:bg-[#777]" aria-label="Trang 2"></button>
+    <button data-dot="2" class="h-2.5 w-2.5 rounded-full bg-[#555]/60 cursor-pointer hover:bg-[#777]" aria-label="Trang 3"></button>
+    <button data-dot="3" class="h-2.5 w-2.5 rounded-full bg-[#555]/60 cursor-pointer hover:bg-[#777]" aria-label="Trang 4"></button>
+  </div>
+
+  <!-- Floating scroll indicator -->
+  <div class="fixed right-4 top-20 flex items-center gap-2 rounded-md border border-[#2a2a2a] bg-[#0a0a0a]/90 px-3 py-1.5 text-xs text-[#555] shadow-sm backdrop-blur-sm z-20">
+    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m6 9 6 6 6-6"/>
+    </svg>
+    <span>Cuộn xuống</span>
+  </div>
+
+  <!-- Floating logo tag (top-right) -->
+  <div class="fixed right-4 top-4 z-20">
+    <a href="/" class="flex items-center gap-2 rounded-md border border-[#2a2a2a] bg-[#0a0a0a]/90 px-3 py-1.5 backdrop-blur-sm shadow-sm">
+      <div class="flex h-5 w-5 items-center justify-center rounded bg-gradient-to-br from-orange-600 to-amber-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]">
+        <svg class="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      </div>
+      <span class="text-xs font-bold text-white">StatGate</span>
+    </a>
+  </div>
 </Layout>
 
-<!-- ═══════════════════════════════════════════
-     TAB SWITCHER SCRIPT
-═══════════════════════════════════════════ -->
-<script define:vars={{ tabs, colorMap, colorSchemes, positions }}>
-  const indicator    = document.getElementById('tab-indicator');
-  const descriptionEl = document.getElementById('tab-description');
-  const tabButtons   = document.querySelectorAll('[data-tab]');
-  const panels       = document.querySelectorAll('.tab-panel');
+<!-- ═══════════════════════════════════════════════════════════════
+     TAB SWITCHER + LANGUAGE SCRIPT
+══════════════════════════════════════════════════════════════ -->
+<script define:vars={{ tabs, colorSchemes, positions }}>
+  const indicator  = document.getElementById('tab-indicator');
+  const tabButtons = document.querySelectorAll('[data-tab]');
+  const panels     = document.querySelectorAll('.tab-panel');
+  const dots       = document.querySelectorAll('[data-dot]');
+  const tabCards   = document.querySelectorAll('.tab-card');
+  const tabDesc    = document.getElementById('tab-description');
+  const langEn     = document.getElementById('lang-en');
+  const langVi     = document.getElementById('lang-vi');
+
+  const schemeMap = {
+    orange: { bg: 'rgba(249,115,22,0.15)', border: 'rgba(249,115,22,0.30)', shadow: '0 0 16px rgba(249,115,22,0.2)' },
+    amber:  { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.30)', shadow: '0 0 16px rgba(245,158,11,0.2)' },
+    yellow: { bg: 'rgba(234,179,8,0.15)',  border: 'rgba(234,179,8,0.30)',  shadow: '0 0 16px rgba(234,179,8,0.2)' },
+    lime:   { bg: 'rgba(132,204,22,0.15)', border: 'rgba(132,204,22,0.30)', shadow: '0 0 16px rgba(132,204,22,0.2)' },
+  };
 
   function setTab(index) {
-    const scheme = colorMap[colorSchemes[index]];
+    const color  = colorSchemes[index];
+    const scheme = schemeMap[color];
 
-    // Indicator
     if (indicator) {
       indicator.style.left      = positions[index];
-      indicator.style.background  = scheme.indicatorBg;
-      indicator.style.border     = `1px solid ${scheme.indicatorBorder}`;
-      indicator.style.boxShadow  = scheme.indicatorShadow;
+      indicator.style.background = scheme.bg;
+      indicator.style.border   = `1px solid ${scheme.border}`;
+      indicator.style.boxShadow = scheme.shadow;
     }
 
-    // Buttons
     tabButtons.forEach((btn, i) => {
       const isActive = i === index;
-      const color    = colorSchemes[i];
+      const c = colorSchemes[i];
       btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      const icon = btn.querySelector(`[class*="tab-icon-"]`);
-      if (icon) {
-        icon.className = `tab-icon-${tabs[i].id} inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold font-mono transition-all duration-200 ${isActive ? `bg-${color}-500/20 text-${color}-300` : 'bg-white/5 text-[#666]'}`;
-      }
+      const icon  = btn.querySelector(`[class*="tab-icon-"]`);
       const label = btn.querySelector(`[class*="tab-label-"]`);
-      if (label) label.className = `tab-label-${tabs[i].id} ${isActive ? 'text-white' : 'text-[#a1a1a1]'}`;
+      if (icon) {
+        icon.className = `tab-icon-${tabs[i].id} inline-flex h-5 w-5 items-center justify-center rounded text-[10px] font-bold font-mono transition-all duration-200 ${isActive ? `bg-${c}-500/20 text-${c}-300` : 'bg-white/5 text-[#666]'}`;
+      }
+      if (label) {
+        label.className = `tab-label-${tabs[i].id} ${isActive ? 'text-white' : 'text-[#a1a1a1]'}`;
+      }
     });
 
-    // Description
-    if (descriptionEl) descriptionEl.textContent = tabs[index].desc;
+    dots.forEach((dot, i) => {
+      dot.className = `h-2.5 w-2.5 rounded-full transition-colors ${i === index ? 'bg-orange-400' : 'bg-[#555]/60 hover:bg-[#777]'} cursor-pointer`;
+    });
 
-    // Panels with fade
+    // Switch right-side tab cards
+    tabCards.forEach((card) => {
+      const isTarget = card.id === `card-${tabs[index].id}`;
+      if (isTarget) {
+        card.classList.remove('hidden');
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(8px)';
+        card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          });
+        });
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    // Switch tab-panel sections
     panels.forEach((panel) => {
       const isTarget = panel.getAttribute('data-panel') === tabs[index].id;
       if (isTarget) {
         panel.classList.remove('hidden');
-        panel.style.opacity = '0';
+        panel.style.opacity   = '0';
         panel.style.transform = 'translateY(6px)';
         panel.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
         requestAnimationFrame(() => {
@@ -722,12 +842,29 @@ const plsMistakes = [
     btn.addEventListener('click', () => setTab(i));
   });
 
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => setTab(i));
+  });
+
+  // Keyboard navigation
   tabButtons.forEach((btn, i) => {
     btn.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight') { e.preventDefault(); setTab((i + 1) % tabs.length); }
       if (e.key === 'ArrowLeft')  { e.preventDefault(); setTab((i - 1 + tabs.length) % tabs.length); }
     });
   });
+
+  // Language toggle
+  if (langEn && langVi) {
+    langEn.addEventListener('click', () => {
+      langEn.className = 'flex items-center gap-1.5 rounded-md bg-orange-500 text-white px-3 py-1.5 text-sm font-medium min-w-28 justify-center cursor-pointer transition-all duration-200 hover:bg-orange-400';
+      langVi.className = 'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-[#666] min-w-28 justify-center cursor-pointer transition-all duration-200 hover:bg-[#1a1a1a] hover:text-[#a1a1a1]';
+    });
+    langVi.addEventListener('click', () => {
+      langVi.className = 'flex items-center gap-1.5 rounded-md bg-orange-500 text-white px-3 py-1.5 text-sm font-medium min-w-28 justify-center cursor-pointer transition-all duration-200 hover:bg-orange-400';
+      langEn.className = 'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-[#666] min-w-28 justify-center cursor-pointer transition-all duration-200 hover:bg-[#1a1a1a] hover:text-[#a1a1a1]';
+    });
+  }
 
   setTab(0);
 </script>
